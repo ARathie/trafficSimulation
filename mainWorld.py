@@ -8,12 +8,16 @@ fel = PriorityQueue() #the future event list
 currTime = 0
 
 avg = 3 #the average rate of arrival of vehicles (to be changed later)
+
+#schedules arrival events for vehicles coming from East and West
 def scheduleNextArrival(avg):
 	global currTime
 	interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
 	nextArrivalTime = currTime + interarrival
 	currTime = nextArrivalTime
-	newEvent = Event.Event("Arrival", nextArrivalTime)
+	newEvent = Event.Event()
+	newEvent.randomEventType()
+	newEvent.setEventTimeStamp(nextArrivalTime)
 	fel.put(newEvent)
 
 
