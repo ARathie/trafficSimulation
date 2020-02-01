@@ -25,6 +25,10 @@ class Event:
 
     #pseudo-randomly assigns event type
     def randomEventType(self):
+        #if we have traffic data, we can change it so that
+        #for example 40% traffic comes from east, 30% from west,
+        # and 10% from north/south. Then we can randomly
+        #pick from those.
         randNum = random.randint(1,3) #pseudo-randomly outputs 1 or 2
         if randNum == 1:
             self.setEventType('Arrival_East') #vehicle arrives from east
