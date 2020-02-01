@@ -1,22 +1,16 @@
 # The Intersection class 
 
-from queue import SimpleQueue
+import queue 
 
 class Intersection:
 
     #The intersection's traffic queues. 
     #The direction refers to the direction
     #the traffic is *coming* from.
-    eastQueue = SimpleQueue()
-    westQueue = SimpleQueue()
-    northQueue = SimpleQueue()
-    southQueue = SimpleQueue()
-
-    #the traffic lights
-    eastLight
-    westLight
-    northLight
-    southLight
+    eastQueue = queue.Queue()
+    westQueue = queue.Queue()
+    northQueue = queue.Queue()
+    southQueue = queue.Queue()
 
     #initializes an Intersection object
     #If no light values specified, the default is 
