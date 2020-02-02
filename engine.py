@@ -1,15 +1,19 @@
 # The Event class 
 
 import random
+import objects
+from queue import PriorityQueue
+
+current_time = 0.0
+fel = PriorityQueue()
 
 class Event:
-
 
     #initializes an Event object, default type is '' and
     #timestamp is 0
     def __init__(self, eventType = '', timeStamp = 0):
-        self.eventType = eventType
-        self.timeStamp = timeStamp
+        self.event_type = eventType
+        self.timestamp = timeStamp
 
     #prints the event type and timestamp
     def whoami(self):
@@ -31,4 +35,5 @@ class Event:
         else:
             self.setEventType('Arrival_West') #vehicle arrives from west
 
- 
+def schedule_event(event: Event):
+    fel.put(event.timestamp)
