@@ -40,4 +40,10 @@ class Event:
             self.setEventType('Arrival_West') #vehicle arrives from west
 
 def schedule_event(event: Event):
-    fel.put(event.timestamp)
+    #commenting this out bc I think the fel should 
+    #contain event objects, not just timestamps.
+    #if fel only contains timestamps, how will we 
+    #know what kind of event it is, and thus
+    #how will we be able to process it?
+    #fel.put(event.timeStamp)
+    fel.put(event)

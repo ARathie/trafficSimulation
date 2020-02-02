@@ -46,6 +46,7 @@ avg = 3 #the average rate of arrival of vehicles (to be changed later)
 
 #schedules arrival events for vehicles coming from East and West
 def scheduleNextArrival(avg):
+	global current_time
 	interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
 	nextArrivalTime = current_time + interarrival
 	current_time = nextArrivalTime
@@ -55,8 +56,8 @@ def scheduleNextArrival(avg):
 	schedule_event(newEvent)
 
 
-vehicle_num = 0 #0 vehicles at start of simulation
-while vehicle_num < 10:
+vehicle_num = initial_num_vehicles
+while vehicle_num > 0:
 	scheduleNextArrival(avg)
 	fel.get().whoami() #prints out the event
-	vehicles += 1
+	vehicle_num -= 1
