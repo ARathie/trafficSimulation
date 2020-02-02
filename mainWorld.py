@@ -1,12 +1,14 @@
 import numpy.random as NR
 import math
 import Event
+import Intersection
 
 from queue import PriorityQueue
 
 #a startup method with some kind of simulation
-#initialization behavior. for now just prints
-#the name of the simulator in ascii
+#initialization behavior. for now prints
+#the name of the simulator in ascii and instantiates
+#2 intersections
 def startup():
 	print( 
 		   '___________              _____  _____. __                  \n'
@@ -22,6 +24,10 @@ def startup():
 		   '/_______  /|__|__|_|  /____/|____(____  /__|   \____/|__|    \n'
 		   '        \/          \/                \/                    \n'
 		 )
+
+	#Initialize the 2 intersections
+	intersection1 = Intersection.Intersection()
+	intersection2 = Intersection.Intersection()
 
 startup()
 fel = PriorityQueue() #the future event list
