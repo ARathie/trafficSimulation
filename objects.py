@@ -1,9 +1,5 @@
 # This file holds all of the definitions of the objects
-#import engine
-#import mainWorld
 import queue
-
-
 
 class World:
     def __init__(self):
