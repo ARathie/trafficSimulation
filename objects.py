@@ -1,50 +1,52 @@
 # This file holds all of the definitions of the objects
 import engine
 import mainWorld
+import queue
+
 
 class World:
     def __init__(self):
-        # Explanation of Variable naming: the cardinal direction denotes the direction that those
-        # cars are traveling in. The number denotes which intersectection it is in.
-        # 1 = N. Ave and Luckie St.
-        # 2 = N. Ave and Centennial Olympic Park Drive
 
         #             |           |                   |           |
         #             |           |                   |           |
         #             |           |    Bobby Dodd     |           |
-        #             |south1     |                   |south2     |
+        #             |northQ     |                   |northQ     |
         # ============            ====================            =======
-        #                         west1                            west2         
-        #                  1                                2
+        #                         eastQueue                       eastQueue         
+        #                                                 
 
-        #         east1                          east2
+        #     westQueue                      westQueue
         # ============            ====================            =======
-        #             |     north1|                   |     north2|
+        #             |     southQ|                   |     southQ|
         #             |           |                   |           |
         #             |           |                   |           |
-        #             |  Luckie   |                   | Cent Olym |
+        #             |  Luckie   |                   |  Olympic  |
 
 
-        self.east1 = queue.Queue()
-        self.east2 = queue.Queue()
-
-        self.west1 = queue.Queue()
-        self.west2 = queue.Queue()
-
-        self.north1 = queue.Queue()
-        self.north2 = queue.Queue()
-
-        self.south1 = queue.Queue()
-        self.south2 = queue.Queue()
-
-
-        #Initialize world with some cars in the roads:
-        for i in range(INITIAL_VEH):
-            self.q10to11.put(Vehicle(0))
-            self.q11to12.put(Vehicle(0))
-            self.q12to13.put(Vehicle(0))
-            self.q13to14.put(Vehicle(0))
+        luckie_intersection = Intersection()
+        olympic_intersection = Intersection()
+        
  
+class Intersection:
+
+    #The intersection's traffic queues. 
+    #The direction refers to the direction
+    #the traffic is *coming* from.
+    eastQueue = queue.Queue()
+    westQueue = queue.Queue()
+    northQueue = queue.Queue()
+    southQueue = queue.Queue()
+
+    #initializes an Intersection object
+    #If no light values specified, the default is 
+    #west/east lights are green, north/south lights are red
+    def __init__(self, northLight = 'red', southLight = 'red',
+                    eastLight = 'green', westLight = 'green'):
+        self.northLight = northLight
+        self.southLight = southLight
+        self.eastLight = eastLight
+        self.westLight = westLight
+
 class Vehicle:
     
     def __init__(self, arrival_time, valid):
