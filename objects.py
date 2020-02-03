@@ -51,6 +51,7 @@ class World:
         self.luckie_intersection.lightChanges()
         self.olympic_intersection.lightChanges()
 
+
 class Vehicle:
     
     def __init__(self, arrival_time = 0, valid = 1):
