@@ -32,11 +32,13 @@ class World:
     def __init__(self):
         self.luckie_intersection = Intersection()
         self.olympic_intersection = Intersection()
-=======
 
 class World:
-    def __init__(self):
+    luckie_intersection = Intersection()
+    olympic_intersection = Intersection()
 
+    def __init__(self):
+        pass
         #             |           |                   |           |
         #             |           |                   |           |
         #             |           |    Bobby Dodd     |           |
@@ -54,16 +56,6 @@ class World:
     def changeTheLights(self):
         self.luckie_intersection.lightChanges()
         self.olympic_intersection.lightChanges()
-
-
-class Vehicle:
-    
-    def __init__(self, arrival_time = 0, valid = 1):
-        self.arriveTime = arrival_time
-        self.direction = self.chooseDirection()
-
-        luckie_intersection = Intersection()
-        olympic_intersection = Intersection()
         
  
 class Intersection:
@@ -88,9 +80,9 @@ class Intersection:
 
 class Vehicle:
     
-    def __init__(self, arrival_time, valid):
-        self.arrival_time = start
-
+    def __init__(self, arrival_time = 0, valid = True):
+        self.arrival_time = arrival_time
+        self.direction = self.chooseDirection()
         # Valid means that it is a vehicle that will count for data collection
         # A vehicles is valid if it has only been on North Avenue and no other streets in the sim
         # If a vehicle turns off North Avenue early, change valid to False
