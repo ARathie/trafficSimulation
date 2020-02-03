@@ -28,18 +28,7 @@ class Intersection:
                 self.lights[i] = 1
             i += 1
 
-<<<<<<< HEAD
 class World:
-    def __init__(self):
-        self.luckie_intersection = Intersection()
-        self.olympic_intersection = Intersection()
-
-=======
-     
->>>>>>> cd9ea528387388cd5af7496c052121ada7115069
-class World:
-    luckie_intersection = Intersection()
-    olympic_intersection = Intersection()
 
     def __init__(self):
         pass
@@ -57,8 +46,8 @@ class World:
         #             |           |                   |           |
         #             |  Luckie   |                   |  Olympic  |
 
-    self.luckie_intersection = Intersection()
-    self.olympic_intersection = Intersection()
+        self.luckie_intersection = Intersection()
+        self.olympic_intersection = Intersection()
 
     def changeTheLights(self):
         self.luckie_intersection.lightChanges()
