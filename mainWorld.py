@@ -9,13 +9,14 @@ import objects
 
 ###########################
 #  STATE VARIABLES
-initial_num_vehicles = 50
+initial_num_vehicles = 20
+itter = 0 # to put light changes at fixed rates
+
 
 ###########################
 
 
 # DATA COLLECTION VARIABLES
-
 
 
 #a startup method with some kind of simulation
@@ -44,6 +45,12 @@ startup()
 world = objects.World()
 avg = 3 #the average rate of arrival of vehicles (to be changed later)
 
+###########################
+# EASE OF USE
+luckie_intersection = world.luckie_intersection
+olympic_intersection = world.olympic_intersection
+###########################
+
 #schedules arrival events for vehicles coming from East and West
 def scheduleNextArrival(avg):
 	global current_time
@@ -55,9 +62,48 @@ def scheduleNextArrival(avg):
 	newEvent.setEventTimeStamp(nextArrivalTime)
 	schedule_event(newEvent)
 
+def rePop(vehicle_num = initial_num_vehicles):
+	while vehicle_num > 0:
+		scheduleNextArrival(avg)
+		vehicle_num -= 1
 
-vehicle_num = initial_num_vehicles
-while vehicle_num > 0:
-	scheduleNextArrival(avg)
-	fel.get().whoami() #prints out the event
-	vehicle_num -= 1
+# Populating FEL w/ schedualed light changes
+def populateLightChanges(time):
+	newEvent = engine.Event()
+	newEvent.lightChangeType()
+	newEvent.setEventTimeStamp(time*30)
+	schedule_event(newEvent)
+
+itter+=1
+populateLightChanges(itter)
+rePop()
+
+while itter<300:
+	event = fel.get()
+	event.whoami()
+	#### PARSING ARRIVALS ####
+	# Basically, I am looking through the FEL to see what deal with events
+	if (event.eventType == "AW"):
+		luckie_intersection.westQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AE"):
+		olympic_intersection.eastQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AN1"):
+		luckie_intersection.northQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AN2"):
+		olympic_intersection.northQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AS1"):
+		luckie_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
+	elif (event.eventType == "AS2"):
+		olympic_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
+
+	 #### LIGHT CHANGES ####
+	if (event.eventType == "LC"):
+		world.changeTheLights()
+		itter += 1
+		populateLightChanges(itter)
+		#### Now we can actually move stuff in the queues ####
+
