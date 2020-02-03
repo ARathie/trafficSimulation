@@ -1,14 +1,26 @@
+# This file is the simulation application
+# This files holds the state variables and event procedure
+
 import numpy.random as NR
 import math
-import Event
-import Intersection
+from engine import current_time, fel, schedule_event
+import engine
+import objects
 
-from queue import PriorityQueue
+###########################
+#  STATE VARIABLES
+initial_num_vehicles = 20
+itter = 0 # to put light changes at fixed rates
+
+###########################
+
+
+# DATA COLLECTION VARIABLES
+
 
 #a startup method with some kind of simulation
-#initialization behavior. for now prints
-#the name of the simulator in ascii and instantiates
-#2 intersections
+#initialization behavior. for now just prints
+#the name of the simulator in ascii
 def startup():
 	print( 
 		   '___________              _____  _____. __                  \n'
@@ -25,30 +37,76 @@ def startup():
 		   '        \/          \/                \/                    \n'
 		 )
 
-	#Initialize the 2 intersections
-	intersection1 = Intersection.Intersection()
-	intersection2 = Intersection.Intersection()
+
+
 
 startup()
-fel = PriorityQueue() #the future event list
-currTime = 0
-
+world = objects.World()
 avg = 3 #the average rate of arrival of vehicles (to be changed later)
+
+###########################
+# EASE OF USE
+luckie_intersection = world.luckie_intersection
+olympic_intersection = world.olympic_intersection
+###########################
 
 #schedules arrival events for vehicles coming from East and West
 def scheduleNextArrival(avg):
-	global currTime
+	global current_time
 	interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
-	nextArrivalTime = currTime + interarrival
-	currTime = nextArrivalTime
-	newEvent = Event.Event()
+	nextArrivalTime = current_time + interarrival
+	current_time = nextArrivalTime
+	newEvent = engine.Event()
 	newEvent.randomEventType()
 	newEvent.setEventTimeStamp(nextArrivalTime)
-	fel.put(newEvent)
+	schedule_event(newEvent)
 
 
-vehicles = 0 #0 vehicles at start of simulation
-while vehicles < 10:
-	scheduleNextArrival(avg)
-	fel.get().whoami() #prints out the event
-	vehicles += 1
+def rePop(vehicle_num = initial_num_vehicles):
+	while vehicle_num > 0:
+		scheduleNextArrival(avg)
+		vehicle_num -= 1
+
+# Populating FEL w/ schedualed light changes
+def populateLightChanges(time):
+	newEvent = engine.Event()
+	newEvent.lightChangeType()
+	newEvent.setEventTimeStamp(time*30)
+	schedule_event(newEvent)
+
+itter+=1
+populateLightChanges(itter)
+rePop()
+
+while itter<300:
+	event = fel.get()
+	event.whoami()
+	#### PARSING ARRIVALS ####
+	# Basically, I am looking through the FEL to see what deal with events
+	if (event.eventType == "AW"):
+		luckie_intersection.westQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AE"):
+		olympic_intersection.eastQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AN1"):
+		luckie_intersection.northQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AN2"):
+		olympic_intersection.northQueue.put(objects.Vehicle(event.timeStamp))
+		initial_num_vehicles +- 1
+	elif (event.eventType == "AS1"):
+		luckie_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
+	elif (event.eventType == "AS2"):
+		olympic_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
+
+	 #### LIGHT CHANGES ####
+	if (event.eventType == "LC"):
+		world.changeTheLights()
+		itter += 1
+		populateLightChanges(itter)
+		#### Now we can actually move stuff in the queues ####
+
+
+	#### Finally we are going to want to add more vehicles into the simulation
+	#### For now, I will just continue to make sure we have the minimum number
