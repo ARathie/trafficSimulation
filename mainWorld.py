@@ -12,6 +12,7 @@ import objects
 initial_num_vehicles = 20
 itter = 0 # to put light changes at fixed rates
 
+
 ###########################
 
 
@@ -61,7 +62,6 @@ def scheduleNextArrival(avg):
 	newEvent.setEventTimeStamp(nextArrivalTime)
 	schedule_event(newEvent)
 
-
 def rePop(vehicle_num = initial_num_vehicles):
 	while vehicle_num > 0:
 		scheduleNextArrival(avg)
@@ -107,6 +107,3 @@ while itter<300:
 		populateLightChanges(itter)
 		#### Now we can actually move stuff in the queues ####
 
-
-	#### Finally we are going to want to add more vehicles into the simulation
-	#### For now, I will just continue to make sure we have the minimum number

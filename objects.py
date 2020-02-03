@@ -32,14 +32,18 @@ class World:
     def __init__(self):
         self.luckie_intersection = Intersection()
         self.olympic_intersection = Intersection()
+=======
+
+class World:
+    def __init__(self):
+
         #             |           |                   |           |
         #             |           |                   |           |
         #             |           |    Bobby Dodd     |           |
         #             |northQ     |                   |northQ     |
         # ============            ====================            =======
-        #                         eastQueue                       eastQueue
-        #
-
+        #                         eastQueue                       eastQueue         
+        #                                                 
         #     westQueue                      westQueue
         # ============            ====================            =======
         #             |     southQ|                   |     southQ|
@@ -57,6 +61,36 @@ class Vehicle:
     def __init__(self, arrival_time = 0, valid = 1):
         self.arriveTime = arrival_time
         self.direction = self.chooseDirection()
+
+        luckie_intersection = Intersection()
+        olympic_intersection = Intersection()
+        
+ 
+class Intersection:
+
+    #The intersection's traffic queues. 
+    #The direction refers to the direction
+    #the traffic is *coming* from.
+    eastQueue = queue.Queue()
+    westQueue = queue.Queue()
+    northQueue = queue.Queue()
+    southQueue = queue.Queue()
+
+    #initializes an Intersection object
+    #If no light values specified, the default is 
+    #west/east lights are green, north/south lights are red
+    def __init__(self, northLight = 'red', southLight = 'red',
+                    eastLight = 'green', westLight = 'green'):
+        self.northLight = northLight
+        self.southLight = southLight
+        self.eastLight = eastLight
+        self.westLight = westLight
+
+class Vehicle:
+    
+    def __init__(self, arrival_time, valid):
+        self.arrival_time = start
+
         # Valid means that it is a vehicle that will count for data collection
         # A vehicles is valid if it has only been on North Avenue and no other streets in the sim
         # If a vehicle turns off North Avenue early, change valid to False
