@@ -61,25 +61,7 @@ def scheduleNextArrival(avg):
     newEvent.setEventTimeStamp(nextArrivalTime)
     schedule_event(newEvent)
 
-def rePop(vehicle_num = initial_num_vehicles):
-    while vehicle_num > 0:
-        scheduleNextArrival(avg)
-        vehicle_num -= 1
-
-# Populating FEL w/ schedualed light changes
-def populateLightChanges(time):
-    newEvent = engine.Event()
-    newEvent.lightChangeType()
-    newEvent.setEventTimeStamp(time*30)
-    schedule_event(newEvent)
-
-itter+=1
-populateLightChanges(itter)
-rePop()
-
-while itter<300:
-    event = fel.get()
-    event.whoami()
+def onArrival(event):
     #### PARSING ARRIVALS ####
     # Basically, I am looking through the FEL to see what deal with events
     if (event.eventType == "AW"):
@@ -99,10 +81,40 @@ while itter<300:
     elif (event.eventType == "AS2"):
         olympic_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
 
+def onLightChange(event):
+    
+
+def rePop(vehicle_num = initial_num_vehicles):
+    while vehicle_num > 0:
+        scheduleNextArrival(avg)
+        vehicle_num -= 1
+
+# Populating FEL w/ schedualed light changes
+def populateLightChanges(time):
+    newEvent = engine.Event()
+    newEvent.lightChangeType()
+    newEvent.setEventTimeStamp(time*30)
+    schedule_event(newEvent)
+
+itter+=1
+populateLightChanges(itter)
+rePop()
+
+while itter<300:
+    event = fel.get()
+    event.whoami()
+
+    #If Event Type is an Arrival Event (arrival of vehicle)
+    if event.eventType[0] == 'A':
+        onArrival(event)
+
+    if event.eventType == 'LC'
+        onLightChange(event)
+    """
      #### LIGHT CHANGES ####
     if (event.eventType == "LC"):
         world.changeTheLights()
         itter += 1
         populateLightChanges(itter)
         #### Now we can actually move stuff in the queues ####
-
+    """
