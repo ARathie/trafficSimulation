@@ -82,7 +82,7 @@ def onArrival(event):
         olympic_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
 
 def onLightChange(event):
-    
+    pass
 
 def rePop(vehicle_num = initial_num_vehicles):
     while vehicle_num > 0:
