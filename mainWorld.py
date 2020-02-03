@@ -12,7 +12,6 @@ import objects
 initial_num_vehicles = 20
 itter = 0 # to put light changes at fixed rates
 
-
 ###########################
 
 
