@@ -1,5 +1,4 @@
 # The Event class 
-
 import random
 import objects
 from queue import PriorityQueue
