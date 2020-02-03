@@ -108,7 +108,7 @@ while itter<300:
     if event.eventType[0] == 'A':
         onArrival(event)
 
-    if event.eventType == 'LC'
+    if event.eventType == 'LC':
         onLightChange(event)
     """
      #### LIGHT CHANGES ####
