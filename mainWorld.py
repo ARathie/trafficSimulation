@@ -262,5 +262,5 @@ while itter < 1000:
 print("Number of cars: " + str(num_cars))
 print("Total number of cars processed by sim " + str(olympic_intersection.exits + luckie_intersection.exits))
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
-print("Number of cars exited from luckie intersection: " + str(olympic_intersection.exits))
+print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
 
