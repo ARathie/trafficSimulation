@@ -14,7 +14,7 @@ import numpy as np
 #  STATE VARIABLES
 initial_num_vehicles = 20
 itter = 0  # to put light changes at fixed rates
-
+num_cars = 0
 ###########################
 
 
@@ -227,8 +227,8 @@ def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
     # each element represents a 10 minute period starting at 12:00
     arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
     relevant_arrival_rates = arrival_rates[time_interval[0]: time_interval[1]]
-    fel_size = 0
 
+    global num_cars
     for i in range(len(relevant_arrival_rates)):
         for _ in range(relevant_arrival_rates[i]):
             event = engine.Event()
@@ -236,9 +236,7 @@ def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
             minutes = (time_interval[1] - time_interval[0])*60
             event.setEventTimestamp(i + time_interval[0] + round(NR.uniform(0, minutes)/60.0, 3)) # TODO: Change timestamp to a stochastic time stamp
             schedule_event(event)
-            fel_size += 1
-
-    print("HEGRWJIBHEJWNOFBHREFQKNFWRBHEFKNOR " + str(fel_size))
+            num_cars += 1
 
 def checkIfSimLive():
     return True
@@ -261,6 +259,8 @@ while itter < 1000:
         populateLightChanges(itter)
         itter += 1
 
-print(luckie_intersection.exits)
-print(olympic_intersection.exits)
+print("Number of cars: " + str(num_cars))
+print("Total number of cars processed by sim " + str(olympic_intersection.exits + luckie_intersection.exits))
+print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
+print("Number of cars exited from luckie intersection: " + str(olympic_intersection.exits))
 
