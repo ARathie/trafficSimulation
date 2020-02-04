@@ -6,6 +6,8 @@ import math
 from engine import current_time, fel, schedule_event
 import engine
 import objects
+import math
+
 
 ###########################
 #  STATE VARIABLES
@@ -81,6 +83,8 @@ def onArrival(event):
     elif (event.eventType == "AS2"):
         olympic_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
 
+	current_time = event.timestamp
+
 def onLightChange(event):
     pass
 
@@ -96,9 +100,37 @@ def populateLightChanges(time):
     newEvent.setEventTimeStamp(time*30)
     schedule_event(newEvent)
 
+def get_num_vehicles():
+	east = -0.0098*(x**5) + 0.6157*(x**4) + -13.8048*(x**3) + 125.8024*(x**2) + -337.2493*x + 273.2855
+	west = -0.0084*(x**5) + 0.5114*(x**4) + -11.3061*(x**3) + 102.2751*(x**2) + -205.6825*x + 218.7994
+	total = round(east + west, 0)
+
+def generate_arrivals(time_interval): # time interval in tuple form ie (12, 14)
+	
+	# global current_time
+    # interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
+    # nextArrivalTime = current_time + interarrival
+    # current_time = nextArrivalTime
+    # newEvent = engine.Event()
+    # newEvent.randomEventType()
+    # newEvent.setEventTimeStamp(nextArrivalTime)
+    # schedule_event(newEvent)
+
+	# each element represents a 10 minute period starting at 12:00
+	arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
+	relevant_arrival_rates = arrival_rates[time_interval]
+
+	for i in range(len(relevant_arrival_rates)):
+		for _ in range(relevant_arrival_rates[i]):
+			event = engine.Event()
+			event.randomEventType(event)
+			event.setEventTimeStamp(i + time_interval[0] + math.round(NR.random(0, (time_interval[1] - time_interval[0])*60), 4)) # TODO: Change timestamp to a stochastic time stamp
+			schedule_event(event)
+
 itter+=1
 populateLightChanges(itter)
 rePop()
+generate_arrivals((12, 15))
 
 while itter<300:
     event = fel.get()
