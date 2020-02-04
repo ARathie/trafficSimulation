@@ -2,22 +2,22 @@
 import queue
 import random
 
+
 class Intersection:
+    # The intersection's traffic queues.
+    # The direction refers to the direction
+    # the traffic is *coming* from.
 
-    #The intersection's traffic queues. 
-    #The direction refers to the direction
-    #the traffic is *coming* from.
-    eastQueue = queue.Queue()
-    westQueue = queue.Queue()
-    northQueue = queue.Queue()
-    southQueue = queue.Queue()
-
-    #initializes an Intersection object
-    #If no light values specified, the default is 
-    #west/east lights are green (1), north/south lights are red (0)
-    def __init__(self, northLight = 0, southLight = 0,
-                    eastLight = 1, westLight = 1):
+    # initializes an Intersection object
+    # If no light values specified, the default is
+    # west/east lights are green (1), north/south lights are red (0)
+    def __init__(self, northLight=0, southLight=0, eastLight=1, westLight=1):
         self.lights = [northLight, southLight, eastLight, westLight]
+        self.exits = 0
+        self.eastQueue = queue.Queue()
+        self.westQueue = queue.Queue()
+        self.northQueue = queue.Queue()
+        self.southQueue = queue.Queue()
 
     def lightChanges(self):
         i = 0
@@ -28,17 +28,21 @@ class Intersection:
                 self.lights[i] = 1
             i += 1
 
+    def carsToBeLetThrough(self, light_time, speed_limit=30):
+        return speed_limit + light_time
+
+
 class World:
 
     def __init__(self):
-        pass
+
         #             |           |                   |           |
         #             |           |                   |           |
         #             |           |    Bobby Dodd     |           |
         #             |northQ     |                   |northQ     |
         # ============            ====================            =======
-        #                         eastQueue                       eastQueue         
-        #                                                 
+        #                         eastQueue                       eastQueue
+        #
         #     westQueue                      westQueue
         # ============            ====================            =======
         #             |     southQ|                   |     southQ|
@@ -52,7 +56,7 @@ class World:
     def changeTheLights(self):
         self.luckie_intersection.lightChanges()
         self.olympic_intersection.lightChanges()
-    
+
 
 class Vehicle:
     
@@ -66,10 +70,14 @@ class Vehicle:
 
         # Exit time is -1 if vehicle has not exited the simulation corridor yet
         self.exit_time = -1
+        self.id = random.randint(1, 100000000)
+
+    def __str__(self):
+        return self.id
 
     def chooseDirection(self):
         # A direction will need to be specified to know who is going where
-        randNum = random.randint(1, 4) #chooses between 1-3, where 1 is forward, 2 is left, 3 is right.
+        randNum = random.randint(1, 3)  # chooses between 1-3, where 1 is forward, 2 is left, 3 is right.
         if randNum == 1:
             return "F"
         elif randNum == 2:
@@ -77,7 +85,8 @@ class Vehicle:
         elif randNum == 3:
             return "R"
 
-    def exitVehicle(self, end):
+    def exitVehicle(self):
+        from engine import current_time
         self.exit_time = current_time
         self.finished = True
-        self.time = self.end - self.start + 20
+        self.time = self.exit_time - self.arrival_time + 20

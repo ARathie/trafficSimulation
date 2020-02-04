@@ -41,7 +41,7 @@ class Event:
         # and 10% from north/south. Then we can randomly
         #pick from those.
 
-        randNum = random.randint(1,7) #pseudo-randomly outputs 1-6
+        randNum = random.randint(1,6) #pseudo-randomly outputs 1-6
         if randNum == 1:
             self.setEventType('AE') #vehicle arrives from east
         elif randNum == 2:
@@ -56,7 +56,9 @@ class Event:
             self.setEventType('AS2') #vehicle arrives from south 2
 
     def lightChangeType(self):
-        self.setEventType("LC") #an event for light changes    
+        self.setEventType("LC") #an event for light changes
+        randNum = random.randint(1,3) #pseudo-randomly outputs 1 or 2
+
 
 def schedule_event(event: Event):
     fel.put(event)
