@@ -10,28 +10,28 @@ class Event:
 
     #initializes an Event object, default type is '' and
     #timestamp is 0
-    def __init__(self, eventType = '', timeStamp = 0):
+    def __init__(self, eventType = '', timestamp = 0):
         self.event_type = eventType
-        self.timestamp = timeStamp
+        self.timestamp = timestamp
 
     def __lt__(self, other):
-        return self.timeStamp < other.timeStamp
+        return self.timestamp < other.timestamp
 
     def __eq__(self, other):
-        return self.timeStamp == other.timeStamp
+        return self.timestamp == other.timestamp
 
 
     #prints the event type and timestamp
     def whoami(self):
-        print(self.eventType + ", " + str(self.timeStamp))
+        print(self.eventType + ", " + str(self.timestamp))
 
     #sets the event type
     def setEventType(self, etype):
         self.eventType = etype
 
     #sets the timestamp of the event
-    def setEventTimeStamp(self, timestamp):
-        self.timeStamp = timestamp
+    def setEventTimestamp(self, timestamp):
+        self.timestamp = timestamp
 
 
     #pseudo-randomly assigns event type for arrivals
@@ -58,6 +58,7 @@ class Event:
     def lightChangeType(self):
         self.setEventType("LC") #an event for light changes
         randNum = random.randint(1,3) #pseudo-randomly outputs 1 or 2
+
 
 def schedule_event(event: Event):
     fel.put(event)

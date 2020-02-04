@@ -35,6 +35,7 @@ class Intersection:
 class World:
 
     def __init__(self):
+
         #             |           |                   |           |
         #             |           |                   |           |
         #             |           |    Bobby Dodd     |           |
@@ -58,7 +59,8 @@ class World:
 
 
 class Vehicle:
-    def __init__(self, arrival_time=0, valid=True):
+    
+    def __init__(self, arrival_time = 0, valid = True):
         self.arrival_time = arrival_time
         self.direction = self.chooseDirection()
         # Valid means that it is a vehicle that will count for data collection
