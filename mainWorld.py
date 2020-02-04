@@ -88,98 +88,110 @@ def onLightChange(event):
     # FOR NORTH-SOUTH
     if luckie_intersection.lights[0] is 1:
         for i in range(0, luckie_intersection.carsToBeLetThrough(30, 30)):
-            print(i)
             # FIRST WE POP THE LUCKIE INTERSECTION
-            popped = luckie_intersection.northQueue.get()
-            if popped.direction == "F":
-                popped.exitVehicle()
-            elif popped.direction == "L":
-                olympic_intersection.westQueue.put(popped)
-            else:
-                popped.exitVehicle()
+            if not luckie_intersection.northQueue.empty():
+                popped = luckie_intersection.northQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
+                elif popped.direction == "L":
+                    olympic_intersection.westQueue.put(popped)
+                else:
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
 
-            popped = luckie_intersection.southQueue.get()
-            if popped.direction == "F":
-                popped.exitVehicle()
-            elif popped.direction == "L":
-                popped.exitVehicle()
-            else:
-                olympic_intersection.westQueue.put(popped)
+            if not luckie_intersection.southQueue.empty():
+                popped = luckie_intersection.southQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
+                elif popped.direction == "L":
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
+                else:
+                    olympic_intersection.westQueue.put(popped)
 
             # NOW WE POP THE OLYMPIC INTERSECTION
-            popped = olympic_intersection.northQueue.get()
-            if popped.direction == "F":
-                popped.exitVehicle()
-            elif popped.direction == "L":
-                popped.exitVehicle()
-            else:
-                luckie_intersection.eastQueue.put(popped)
+            if not olympic_intersection.northQueue.empty():
+                popped = olympic_intersection.northQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+                elif popped.direction == "L":
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+                else:
+                    luckie_intersection.eastQueue.put(popped)
 
-            popped = olympic_intersection.southQueue.get()
-            if popped.direction == "F":
-                popped.exitVehicle()
-            elif popped.direction == "L":
-                luckie_intersection.eastQueue.put(popped)
-            else:
-                popped.exitVehicle()
+            if not olympic_intersection.southQueue.empty():
+                popped = olympic_intersection.southQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+                elif popped.direction == "L":
+                    luckie_intersection.eastQueue.put(popped)
+                else:
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
     # FOR EAST-WEST
     else:
         for i in range(0, luckie_intersection.carsToBeLetThrough(30, 30)):
-            print("\n")
-            print(i)
             # FIRST WE POP THE LUCKIE INTERSECTION
-            print("\nFROM WEST LCK")
-            popped = luckie_intersection.westQueue.get()
-            print(popped)
-            popped.direction = popped.chooseDirection()
-            print(popped.direction)
-            if popped.direction == "F":
-                olympic_intersection.westQueue.put(popped)
-                print("after")
-            elif popped.direction == "L":
-                popped.exitVehicle()
-            else:
-                popped.exitVehicle()
+            if not luckie_intersection.westQueue.empty():
+                popped = luckie_intersection.westQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    olympic_intersection.westQueue.put(popped)
+                elif popped.direction == "L":
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
+                else:
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
 
-            print("\nFROM EAST LCK")
-            popped = luckie_intersection.eastQueue.get()
-            print(popped)
-            popped.direction = popped.chooseDirection()
-            print(popped.direction)
-            if popped.direction == "F":
-                popped.exitVehicle()
-            elif popped.direction == "L":
-                popped.exitVehicle()
-            else:
-                popped.exitVehicle()
+            if not luckie_intersection.eastQueue.empty():
+                popped = luckie_intersection.eastQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
+                elif popped.direction == "L":
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
+                else:
+                    popped.exitVehicle()
+                    luckie_intersection.exits += 1
 
             # NOW WE POP THE OLYMPIC INTERSECTION
-            print("\nFROM WEST OL")
-            popped = olympic_intersection.westQueue.get()
-            print(popped)
-            popped.direction = popped.chooseDirection()
-            print(popped.direction)
-            if popped.direction == "F":
-                popped.exitVehicle()
-            elif popped.direction == "L":
-                popped.exitVehicle()
-            else:
-                popped.exitVehicle()
+            if not olympic_intersection.westQueue.empty():
+                popped = olympic_intersection.westQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+                elif popped.direction == "L":
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+                else:
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
 
-            popped = olympic_intersection.eastQueue.get()
-            print(popped)
-            popped.direction = popped.chooseDirection()
-            print("\nFROM EAST OL")
-            print(popped)
-            print(popped.direction)
-            if popped.direction == "F":
-                luckie_intersection.eastQueue.put(popped)
-                print("after")
-            elif popped.direction == "L":
-                popped.exitVehicle()
-            else:
-                popped.exitVehicle()
-
+            if not olympic_intersection.eastQueue.empty():
+                popped = olympic_intersection.eastQueue.get()
+                popped.direction = popped.chooseDirection()
+                if popped.direction == "F":
+                    luckie_intersection.eastQueue.put(popped)
+                elif popped.direction == "L":
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+                else:
+                    popped.exitVehicle()
+                    olympic_intersection.exits += 1
+    world.changeTheLights()
 
 def rePop(vehicle_num=initial_num_vehicles):
     while vehicle_num > 0:
@@ -199,9 +211,9 @@ itter += 1
 populateLightChanges(itter)
 rePop()
 
-while itter < 300:
+while itter < 10:
     event = fel.get()
-    event.whoami()
+    #event.whoami()
 
     # If Event Type is an Arrival Event (arrival of vehicle)
     if event.eventType[0] == 'A':
@@ -209,11 +221,17 @@ while itter < 300:
 
     if event.eventType == 'LC':
         onLightChange(event)
+        populateLightChanges(itter)
+        itter += 1
     """
      #### LIGHT CHANGES ####
     if (event.eventType == "LC"):
         world.changeTheLights()
         itter += 1
+        
         populateLightChanges(itter)
         #### Now we can actually move stuff in the queues ####
     """
+
+print(luckie_intersection.exits)
+print(olympic_intersection.exits)

@@ -41,7 +41,7 @@ class Event:
         # and 10% from north/south. Then we can randomly
         #pick from those.
 
-        randNum = random.randint(1,7) #pseudo-randomly outputs 1-6
+        randNum = random.randint(1,6) #pseudo-randomly outputs 1-6
         if randNum == 1:
             self.setEventType('AE') #vehicle arrives from east
         elif randNum == 2:

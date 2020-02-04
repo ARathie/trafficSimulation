@@ -2,21 +2,22 @@
 import queue
 import random
 
+
 class Intersection:
     # The intersection's traffic queues.
     # The direction refers to the direction
     # the traffic is *coming* from.
-    eastQueue = queue.Queue()
-    westQueue = queue.Queue()
-    northQueue = queue.Queue()
-    southQueue = queue.Queue()
 
     # initializes an Intersection object
     # If no light values specified, the default is
     # west/east lights are green (1), north/south lights are red (0)
-    def __init__(self, northLight=0, southLight=0,
-                 eastLight=1, westLight=1):
+    def __init__(self, northLight=0, southLight=0, eastLight=1, westLight=1):
         self.lights = [northLight, southLight, eastLight, westLight]
+        self.exits = 0
+        self.eastQueue = queue.Queue()
+        self.westQueue = queue.Queue()
+        self.northQueue = queue.Queue()
+        self.southQueue = queue.Queue()
 
     def lightChanges(self):
         i = 0
@@ -34,7 +35,6 @@ class Intersection:
 class World:
 
     def __init__(self):
-        pass
         #             |           |                   |           |
         #             |           |                   |           |
         #             |           |    Bobby Dodd     |           |
@@ -56,8 +56,8 @@ class World:
         self.luckie_intersection.lightChanges()
         self.olympic_intersection.lightChanges()
 
-class Vehicle:
 
+class Vehicle:
     def __init__(self, arrival_time=0, valid=True):
         self.arrival_time = arrival_time
         self.direction = self.chooseDirection()
@@ -68,10 +68,14 @@ class Vehicle:
 
         # Exit time is -1 if vehicle has not exited the simulation corridor yet
         self.exit_time = -1
+        self.id = random.randint(1, 100000000)
+
+    def __str__(self):
+        return self.id
 
     def chooseDirection(self):
         # A direction will need to be specified to know who is going where
-        randNum = random.randint(1, 4)  # chooses between 1-3, where 1 is forward, 2 is left, 3 is right.
+        randNum = random.randint(1, 3)  # chooses between 1-3, where 1 is forward, 2 is left, 3 is right.
         if randNum == 1:
             return "F"
         elif randNum == 2:
