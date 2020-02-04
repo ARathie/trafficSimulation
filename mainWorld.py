@@ -7,6 +7,7 @@ from engine import current_time, fel, schedule_event
 import engine
 import objects
 import math
+import numpy as np
 
 
 ###########################
@@ -60,30 +61,29 @@ def scheduleNextArrival(avg):
     current_time = nextArrivalTime
     newEvent = engine.Event()
     newEvent.randomEventType()
-    newEvent.setEventTimeStamp(nextArrivalTime)
+    newEvent.setEventTimestamp(nextArrivalTime)
     schedule_event(newEvent)
 
 def onArrival(event):
     #### PARSING ARRIVALS ####
     # Basically, I am looking through the FEL to see what deal with events
     if (event.eventType == "AW"):
-        luckie_intersection.westQueue.put(objects.Vehicle(event.timeStamp))
+        luckie_intersection.westQueue.put(objects.Vehicle(event.timestamp))
         initial_num_vehicles +- 1
     elif (event.eventType == "AE"):
-        olympic_intersection.eastQueue.put(objects.Vehicle(event.timeStamp))
+        olympic_intersection.eastQueue.put(objects.Vehicle(event.timestamp))
         initial_num_vehicles +- 1
     elif (event.eventType == "AN1"):
-        luckie_intersection.northQueue.put(objects.Vehicle(event.timeStamp))
+        luckie_intersection.northQueue.put(objects.Vehicle(event.timestamp))
         initial_num_vehicles +- 1
     elif (event.eventType == "AN2"):
-        olympic_intersection.northQueue.put(objects.Vehicle(event.timeStamp))
+        olympic_intersection.northQueue.put(objects.Vehicle(event.timestamp))
         initial_num_vehicles +- 1
     elif (event.eventType == "AS1"):
-        luckie_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
+        luckie_intersection.southQueue.put(objects.Vehicle(event.timestamp))
     elif (event.eventType == "AS2"):
-        olympic_intersection.southQueue.put(objects.Vehicle(event.timeStamp))
-
-	current_time = event.timestamp
+        olympic_intersection.southQueue.put(objects.Vehicle(event.timestamp))
+    current_time = event.timestamp
 
 def onLightChange(event):
     pass
@@ -97,49 +97,49 @@ def rePop(vehicle_num = initial_num_vehicles):
 def populateLightChanges(time):
     newEvent = engine.Event()
     newEvent.lightChangeType()
-    newEvent.setEventTimeStamp(time*30)
+    newEvent.setEventTimestamp(time*30)
     schedule_event(newEvent)
 
 def get_num_vehicles():
-	east = -0.0098*(x**5) + 0.6157*(x**4) + -13.8048*(x**3) + 125.8024*(x**2) + -337.2493*x + 273.2855
-	west = -0.0084*(x**5) + 0.5114*(x**4) + -11.3061*(x**3) + 102.2751*(x**2) + -205.6825*x + 218.7994
-	total = round(east + west, 0)
+    east = -0.0098*(x**5) + 0.6157*(x**4) + -13.8048*(x**3) + 125.8024*(x**2) + -337.2493*x + 273.2855
+    west = -0.0084*(x**5) + 0.5114*(x**4) + -11.3061*(x**3) + 102.2751*(x**2) + -205.6825*x + 218.7994
+    total = round(east + west, 0)
 
-def generate_arrivals(time_interval): # time interval in tuple form ie (12, 14)
-	
-	# global current_time
+def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
+    
+    # global current_time
     # interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
     # nextArrivalTime = current_time + interarrival
     # current_time = nextArrivalTime
     # newEvent = engine.Event()
     # newEvent.randomEventType()
-    # newEvent.setEventTimeStamp(nextArrivalTime)
+    # newEvent.setEventTimestamp(nextArrivalTime)
     # schedule_event(newEvent)
 
-	# each element represents a 10 minute period starting at 12:00
-	arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
-	relevant_arrival_rates = arrival_rates[time_interval]
+    # each element represents a 10 minute period starting at 12:00
+    arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
+    relevant_arrival_rates = arrival_rates[time_interval[0]: time_interval[1]]
 
-	for i in range(len(relevant_arrival_rates)):
-		for _ in range(relevant_arrival_rates[i]):
-			event = engine.Event()
-			event.randomEventType(event)
-			event.setEventTimeStamp(i + time_interval[0] + math.round(NR.random(0, (time_interval[1] - time_interval[0])*60), 4)) # TODO: Change timestamp to a stochastic time stamp
-			schedule_event(event)
+    for i in range(len(relevant_arrival_rates)):
+        for _ in range(relevant_arrival_rates[i]):
+            event = engine.Event()
+            event.randomEventType()
+            minutes = (time_interval[1] - time_interval[0])*60
+            event.setEventTimestamp(i + time_interval[0] + round(NR.uniform(0, minutes)/60.0, 3)) # TODO: Change timestamp to a stochastic time stamp
+            schedule_event(event)
 
 def checkIfSimLive():
-    pass
+    return True
 
 itter+=1
 populateLightChanges(itter)
-rePop()
+# rePop()
 generate_arrivals((12, 15))
 
 #while itter<300:
 while checkIfSimLive():
     event = fel.get()
     event.whoami()
-
     #If Event Type is an Arrival Event (arrival of vehicle)
     if event.eventType[0] == 'A':
         onArrival(event)
