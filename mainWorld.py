@@ -127,12 +127,16 @@ def generate_arrivals(time_interval): # time interval in tuple form ie (12, 14)
 			event.setEventTimeStamp(i + time_interval[0] + math.round(NR.random(0, (time_interval[1] - time_interval[0])*60), 4)) # TODO: Change timestamp to a stochastic time stamp
 			schedule_event(event)
 
+def checkIfSimLive():
+    pass
+
 itter+=1
 populateLightChanges(itter)
 rePop()
 generate_arrivals((12, 15))
 
-while itter<300:
+#while itter<300:
+while checkIfSimLive():
     event = fel.get()
     event.whoami()
 
