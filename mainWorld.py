@@ -2,6 +2,7 @@
 # This files holds the state variables and event procedure
 
 import numpy.random as NR
+import random
 import math
 from engine import current_time, fel, schedule_event
 import engine
@@ -15,6 +16,18 @@ import numpy as np
 initial_num_vehicles = 20
 itter = 0  # to put light changes at fixed rates
 num_cars = 0
+###########################
+
+###########################
+#  DATA
+
+# each element represents a 10 minute period starting at 12:00, 12pm --> 4pm
+arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
+
+#number of cars per every 10 minutes: 
+#this is the array of lambdas for the exponential distribution function
+arrival_rate_lambdas = arrival_rates / 10
+
 ###########################
 
 
@@ -53,16 +66,41 @@ olympic_intersection = world.olympic_intersection
 
 ###########################
 
-# schedules arrival events for vehicles coming from East and West
-def scheduleNextArrival(avg):
-    global current_time
-    interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
-    nextArrivalTime = current_time + interarrival
-    current_time = nextArrivalTime
-    newEvent = engine.Event()
-    newEvent.randomEventType()
-    newEvent.setEventTimestamp(nextArrivalTime)
-    schedule_event(newEvent)
+#generates a time block array in 10 minute increments 
+def generateTimeBlockArray(startTime, endTime):
+    numHours = endTime - startTime
+    num10minBlocks = int((numHours * 60) / 10)
+    timeBlockArray = [startTime]
+    arrayTime = startTime * 100
+    for i in range(1, num10minBlocks + 1):
+        if (i % 6) == 0:
+            arrayTime -= 50
+            arrayTime += 100
+        else:
+            arrayTime += 10
+        timeBlockArray.append(arrayTime / 100)
+    return timeBlockArray
+
+# schedules vehicle arrival events within a start and end time
+# (startTime, endTime) should be integers representing hours in 24-hour time,
+# for example, (13, 17), (12, 15), etc.
+def scheduleArrivals(startTime, endTime):
+    global arrival_rate_lambdas
+    global num_cars
+    time = startTime
+    timeBlockArray = generateTimeBlockArray(startTime, endTime)
+
+    for i in range(len(arrival_rate_lambdas)):
+        while (i < (len(timeBlockArray) - 1)) and (time < timeBlockArray[i+1]):
+            lambda_ = arrival_rate_lambdas[i]
+            nextArrivalTime = round(time + random.expovariate(lambda_), 3) #timestamp of arrival event
+            time = nextArrivalTime
+            if nextArrivalTime < endTime:
+                newEvent = engine.Event()
+                newEvent.randomEventType()
+                newEvent.setEventTimestamp(nextArrivalTime)
+                schedule_event(newEvent)
+                num_cars += 1
     
 def onArrival(event):
     #### PARSING ARRIVALS ####
@@ -196,7 +234,7 @@ def onLightChange(event):
 
 def rePop(vehicle_num=initial_num_vehicles):
     while vehicle_num > 0:
-        scheduleNextArrival(avg)
+        scheduleArrivals(avg)
         vehicle_num -= 1
 
        
@@ -224,8 +262,7 @@ def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
     # newEvent.setEventTimestamp(nextArrivalTime)
     # schedule_event(newEvent)
 
-    # each element represents a 10 minute period starting at 12:00
-    arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
+    global arrival_rates
     relevant_arrival_rates = arrival_rates[time_interval[0]: time_interval[1]]
 
     global num_cars
@@ -245,7 +282,8 @@ def checkIfSimLive():
 itter += 1
 populateLightChanges(itter)
 
-generate_arrivals((12, 15))
+#generate_arrivals((12, 15))
+scheduleArrivals(12,15)
 
 while itter < 1000:
     event = fel.get()
