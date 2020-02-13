@@ -16,6 +16,7 @@ import numpy as np
 initial_num_vehicles = 20
 itter = 0  # to put light changes at fixed rates
 num_cars = 0
+num_ppl = 0
 ###########################
 
 ###########################
@@ -105,22 +106,25 @@ def scheduleArrivals(startTime, endTime):
 def onArrival(event):
     #### PARSING ARRIVALS ####
     # Basically, I am looking through the FEL to see what deal with events
+    car = objects.Vehicle(event.timestamp)
+    global num_ppl
+    num_ppl += int(car.passengers)
     if (event.eventType == "AW"):
-        luckie_intersection.westQueue.put(objects.Vehicle(event.timestamp))
+        luckie_intersection.westQueue.put(car)
         initial_num_vehicles + - 1
     elif (event.eventType == "AE"):
-        olympic_intersection.eastQueue.put(objects.Vehicle(event.timestamp))
+        olympic_intersection.eastQueue.put(car)
         initial_num_vehicles + - 1
     elif (event.eventType == "AN1"):
-        luckie_intersection.northQueue.put(objects.Vehicle(event.timestamp))
+        luckie_intersection.northQueue.put(car)
         initial_num_vehicles + - 1
     elif (event.eventType == "AN2"):
-        olympic_intersection.northQueue.put(objects.Vehicle(event.timestamp))
+        olympic_intersection.northQueue.put(car)
         initial_num_vehicles + - 1
     elif (event.eventType == "AS1"):
-        luckie_intersection.southQueue.put(objects.Vehicle(event.timestamp))
+        luckie_intersection.southQueue.put(car)
     elif (event.eventType == "AS2"):
-        olympic_intersection.southQueue.put(objects.Vehicle(event.timestamp))
+        olympic_intersection.southQueue.put(car)
 
 
 def onLightChange(event):
@@ -298,6 +302,7 @@ while itter < 1000:
         itter += 1
 
 print("Number of cars: " + str(num_cars))
+print("Number of people: " + str(num_ppl))
 print("Total number of cars processed by sim " + str(olympic_intersection.exits + luckie_intersection.exits))
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))

@@ -2,7 +2,7 @@
 import queue
 import random
 
-
+pass_arr = [1, 2, 1, 3, 1, 2, 2, 4, 4, 1]
 class Intersection:
     # The intersection's traffic queues.
     # The direction refers to the direction
@@ -67,6 +67,10 @@ class Vehicle:
         # A vehicles is valid if it has only been on North Avenue and no other streets in the sim
         # If a vehicle turns off North Avenue early, change valid to False
         self.valid = valid
+
+        # The number of people in the car
+        rand_pass = random.randrange(10)
+        self.passengers = pass_arr[rand_pass]
 
         # Exit time is -1 if vehicle has not exited the simulation corridor yet
         self.exit_time = -1
