@@ -30,10 +30,6 @@ simulationEndTime = 5
 # each element represents a 10 minute period starting at 12:00, 12pm --> 4pm
 arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
 
-#number of cars per every 10 minutes: 
-#this is the array of lambdas for the exponential distribution function
-arrival_rate_lambdas = arrival_rates / 10
-
 ###########################
 
 
