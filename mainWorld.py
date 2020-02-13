@@ -72,20 +72,6 @@ olympic_intersection = world.olympic_intersection
 
 ###########################
 
-#generates a time block array in 10 minute increments 
-def generateTimeBlockArray(startTime, endTime):
-    numHours = endTime - startTime
-    num10minBlocks = int((numHours * 60) / 10)
-    timeBlockArray = [startTime]
-    arrayTime = startTime * 100
-    for i in range(1, num10minBlocks + 1):
-        if (i % 6) == 0:
-            arrayTime -= 50
-            arrayTime += 100
-        else:
-            arrayTime += 10
-        timeBlockArray.append(arrayTime / 100)
-    return timeBlockArray
 
 # schedules vehicle arrival events 
 def scheduleArrivals():
@@ -258,29 +244,6 @@ def get_num_vehicles(hour):
     total = round(east + west, 0)
     return total
 
-def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
-    
-    # global current_time
-    # interarrival = math.ceil(NR.exponential(avg)) #time until next arrival event
-    # nextArrivalTime = current_time + interarrival
-    # current_time = nextArrivalTime
-    # newEvent = engine.Event()
-    # newEvent.randomEventType()
-    # newEvent.setEventTimestamp(nextArrivalTime)
-    # schedule_event(newEvent)
-
-    global arrival_rates
-    relevant_arrival_rates = arrival_rates[time_interval[0]: time_interval[1]]
-
-    global num_cars
-    for i in range(len(relevant_arrival_rates)):
-        for _ in range(relevant_arrival_rates[i]):
-            event = engine.Event()
-            event.randomEventType()
-            minutes = (time_interval[1] - time_interval[0])*60
-            event.setEventTimestamp(i + time_interval[0] + round(NR.uniform(0, minutes)/60.0, 3)) # TODO: Change timestamp to a stochastic time stamp
-            schedule_event(event)
-            num_cars += 1
 
 def checkIfSimLive():
     return True
@@ -289,7 +252,6 @@ def checkIfSimLive():
 itter += 1
 populateLightChanges(itter)
 
-#generate_arrivals((12, 15))
 scheduleArrivals()
 
 while itter < 1000:
