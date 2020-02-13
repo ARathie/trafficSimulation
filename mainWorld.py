@@ -16,6 +16,12 @@ import numpy as np
 initial_num_vehicles = 20
 itter = 0  # to put light changes at fixed rates
 num_cars = 0
+
+#start time that the simulation is MODELING, i.e.: SUI time between 0 hours to 23 hours
+simulationStartTime = 0
+
+#end time for the SUI, at which the simulation stops, 0 hours to 23 hours
+simulationEndTime = 5
 ###########################
 
 ###########################
@@ -81,26 +87,25 @@ def generateTimeBlockArray(startTime, endTime):
         timeBlockArray.append(arrayTime / 100)
     return timeBlockArray
 
-# schedules vehicle arrival events within a start and end time
-# (startTime, endTime) should be integers representing hours in 24-hour time,
-# for example, (13, 17), (12, 15), etc.
-def scheduleArrivals(startTime, endTime):
+# schedules vehicle arrival events 
+def scheduleArrivals():
     global arrival_rate_lambdas
     global num_cars
-    time = startTime
-    timeBlockArray = generateTimeBlockArray(startTime, endTime)
+    time = simulationStartTime
 
-    for i in range(len(arrival_rate_lambdas)):
-        while (i < (len(timeBlockArray) - 1)) and (time < timeBlockArray[i+1]):
-            lambda_ = arrival_rate_lambdas[i]
-            nextArrivalTime = round(time + random.expovariate(lambda_), 3) #timestamp of arrival event
-            time = nextArrivalTime
-            if nextArrivalTime < endTime:
-                newEvent = engine.Event()
-                newEvent.randomEventType()
-                newEvent.setEventTimestamp(nextArrivalTime)
-                schedule_event(newEvent)
-                num_cars += 1
+    while time < simulationEndTime:
+
+        #the lambda: (cars per minute, given a time in hours)
+        lambda_ = get_num_vehicles(time) / 60
+        nextArrivalTime = time + (round(random.expovariate(lambda_), 3) / 100) #timestamp of arrival event
+        if nextArrivalTime < simulationEndTime:
+            newEvent = engine.Event()
+            newEvent.randomEventType()
+            newEvent.setEventTimestamp(nextArrivalTime)
+            schedule_event(newEvent)
+            num_cars += 1
+        time = nextArrivalTime
+        
     
 def onArrival(event):
     #### PARSING ARRIVALS ####
@@ -246,10 +251,12 @@ def populateLightChanges(time):
     newEvent.setEventTimestamp(time*30)
     schedule_event(newEvent)
 
-def get_num_vehicles():
+def get_num_vehicles(hour):
+    x = hour
     east = -0.0098*(x**5) + 0.6157*(x**4) + -13.8048*(x**3) + 125.8024*(x**2) + -337.2493*x + 273.2855
     west = -0.0084*(x**5) + 0.5114*(x**4) + -11.3061*(x**3) + 102.2751*(x**2) + -205.6825*x + 218.7994
     total = round(east + west, 0)
+    return total
 
 def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
     
@@ -283,7 +290,7 @@ itter += 1
 populateLightChanges(itter)
 
 #generate_arrivals((12, 15))
-scheduleArrivals(12,15)
+scheduleArrivals()
 
 while itter < 1000:
     event = fel.get()
