@@ -133,7 +133,7 @@ def scheduleArrivals(startTime, endTime):
         for i in range(total):
             newEvent = engine.Event()
             newEvent.randomEventType()
-            newEvent.setEventTimestamp((time - startTime) * 3600) # convert to seconds
+            newEvent.setEventTimestamp(((time - startTime) * 3600) + (i * (600/total))) # convert to seconds and normalize arrivals
             schedule_event(newEvent)
     
 def onArrival(event):
