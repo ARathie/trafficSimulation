@@ -21,7 +21,7 @@ end = 15 # ending hour
 ###########################
 #  DATA
 speed_limit = 20.12 # road speed limit (m/s for simplicity) -> 45mph = 20.12 m/s
-light_time = 60 # time of each light cycle (in seconds)
+light_time = 90 # time of each light cycle (in seconds)
 car_count = 0 # number of cars let through each light change
 ###########################
 
@@ -100,7 +100,7 @@ def carsToBeLetThrough(light_time, speed_limit):
 # Returns time after light turns green for car to start moving
 # Assumed to be an exponential type function
 def get_time_to_move(x):
-    return 1 + (x/2) + ((x**2)/64) + ((x**3)/512) + ((x**4)/2048)
+    return 1 + (x/64) + ((x**2)/256) + ((x**3)/1024) + ((x**4)/8096)
 
 
 car_num = carsToBeLetThrough(light_time, speed_limit)
@@ -123,7 +123,7 @@ def generateTimeBlockArray(startTime, endTime):
 def scheduleArrivals(startTime, endTime):
     timeBlockArray = generateTimeBlockArray(startTime, endTime)
     for time in timeBlockArray:
-        total = round(get_num_arrivals(time) / 6) # gen function gives the amount of cars in an hour, div by 6
+        total = round(get_num_arrivals(time)) # gen function gives the amount of cars passing point at given time
         for i in range(total):
             newEvent = engine.Event()
             newEvent.randomEventType()
