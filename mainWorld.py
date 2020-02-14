@@ -21,7 +21,7 @@ end = 15 # ending hour
 ###########################
 #  DATA
 speed_limit = 10 # road speed limit (m/s for simplicity)
-light_time = 90 # time of each light cycle (in seconds)
+light_time = 300 # time of each light cycle (in seconds)
 car_count = 0 # number of cars let through each light change
 ###########################
 
@@ -61,26 +61,37 @@ world = objects.World()
 # EASE OF USE
 luckie_intersection = world.luckie_intersection
 olympic_intersection = world.olympic_intersection
-
 ###########################
 
 # Returns the maximum number of cars that will let through on a light change
 # Dependent on speed limit and light time only
 def carsToBeLetThrough(light_time, speed_limit):
-    count = 0
+    count = 0 # number of cars let through
     avg_accel = 3.5 # 3.5 m/s^2 is the average acceleration rate of cars
     avg_len = 4.5 # average car length is 4.5m
     avg_btw = 1.0 # assumed a meter between each car
+
+    time_get_to_lim = speed_limit/avg_accel # time it takes car to get to speed limit
+    dist_trav_to_lim = (avg_accel*(time_get_to_lim**2)/2) # distance traveled getting to limit
+    print(dist_trav_to_lim)
 
     able_to_go = True # bool for saying if cars will still be able to make it through intersection
     while able_to_go:
         st_time = get_time_to_move(count)
         dist_to_go = (avg_len + avg_btw) * count
-        time_to_get_to_inter = math.sqrt((2*dist_to_go)/avg_accel)
-        if (st_time + time_to_get_to_inter) < light_time:
-            count += 1
+        if (dist_to_go > dist_trav_to_lim): # if car gets to speed limit before intersection
+            dist_to_go2 = dist_to_go - dist_trav_to_lim # dist left after getting to limit
+            time_to_get_to_inter = dist_to_go2/speed_limit
+            if (st_time + time_get_to_lim + time_to_get_to_inter) < light_time:
+                count += 1
+            else:
+                able_to_go = False
         else:
-            able_to_go = False
+            time_to_get_to_inter = math.sqrt((2*dist_to_go)/avg_accel)
+            if (st_time + time_to_get_to_inter) < light_time:
+                count += 1
+            else:
+                able_to_go = False
 
     return count
 
@@ -107,10 +118,7 @@ def generateTimeBlockArray(startTime, endTime):
 # (startTime, endTime) should be integers representing hours in 24-hour time,
 # for example, (13, 17), (12, 15), etc.
 def scheduleArrivals(startTime, endTime):
-    global arrival_rate_lambdas
-    time = startTime
     timeBlockArray = generateTimeBlockArray(startTime, endTime)
-
     for time in timeBlockArray:
         total = round(get_num_arrivals(time) / 6) # gen function gives the amount of cars in an hour, div by 6
         for i in range(total):
@@ -144,7 +152,7 @@ def onLightChange(event):
     # FOR NORTH-SOUTH
     global light_time, speed_limit
     if luckie_intersection.lights[0] is 1:
-        for i in range(0, car_num):
+        for i in range(car_num):
             # FIRST WE POP THE LUCKIE INTERSECTION
             if not luckie_intersection.northQueue.empty():
                 popped = luckie_intersection.northQueue.get()
@@ -196,7 +204,7 @@ def onLightChange(event):
                     olympic_intersection.exits += 1
     # FOR EAST-WEST
     else:
-        for i in range(0, car_num):
+        for i in range(car_num):
             # FIRST WE POP THE LUCKIE INTERSECTION
             if not luckie_intersection.westQueue.empty():
                 popped = luckie_intersection.westQueue.get()

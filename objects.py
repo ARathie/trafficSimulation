@@ -30,10 +30,6 @@ class Intersection:
                 self.lights[i] = 1
             i += 1
 
-    # def carsToBeLetThrough(self, light_time, speed_limit):
-    #     return speed_limit + light_time
-
-
 class World:
 
     def __init__(self):
