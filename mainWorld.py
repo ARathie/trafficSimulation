@@ -20,8 +20,8 @@ end = 15 # ending hour
 
 ###########################
 #  DATA
-speed_limit = 10 # road speed limit (m/s for simplicity)
-light_time = 300 # time of each light cycle (in seconds)
+speed_limit = 20.12 # road speed limit (m/s for simplicity) -> 45mph = 20.12 m/s
+light_time = 60 # time of each light cycle (in seconds)
 car_count = 0 # number of cars let through each light change
 ###########################
 
@@ -73,15 +73,17 @@ def carsToBeLetThrough(light_time, speed_limit):
 
     time_get_to_lim = speed_limit/avg_accel # time it takes car to get to speed limit
     dist_trav_to_lim = (avg_accel*(time_get_to_lim**2)/2) # distance traveled getting to limit
-    print(dist_trav_to_lim)
 
     able_to_go = True # bool for saying if cars will still be able to make it through intersection
     while able_to_go:
         st_time = get_time_to_move(count)
+        print(st_time)
         dist_to_go = (avg_len + avg_btw) * count
+
         if (dist_to_go > dist_trav_to_lim): # if car gets to speed limit before intersection
             dist_to_go2 = dist_to_go - dist_trav_to_lim # dist left after getting to limit
             time_to_get_to_inter = dist_to_go2/speed_limit
+
             if (st_time + time_get_to_lim + time_to_get_to_inter) < light_time:
                 count += 1
             else:
@@ -98,7 +100,8 @@ def carsToBeLetThrough(light_time, speed_limit):
 # Returns time after light turns green for car to start moving
 # Assumed to be an exponential type function
 def get_time_to_move(x):
-    return 1 + (x) + ((x**2)/64) + ((x**3)/512) + ((x**4)/13824)
+    return 1 + (x/2) + ((x**2)/64) + ((x**3)/512) + ((x**4)/2048)
+
 
 car_num = carsToBeLetThrough(light_time, speed_limit)
 print(car_num)
@@ -293,7 +296,10 @@ scheduleArrivals(start, end)
 # how many times light will change in alotted time
 # ((# of hours) * (3600sec/hour)) / length of light time in seconds
 itter_max = (((end - start) * 3600) / light_time)
-print(itter_max)
+
+#print("light changes")
+#print(itter_max)
+
 while itter < itter_max:
     event = fel.get()
     #event.whoami()
