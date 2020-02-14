@@ -58,7 +58,7 @@ class World:
 
 class Vehicle:
     
-    def __init__(self, arrival_time = 0, valid = True):
+    def __init__(self, arrival_time, valid = True):
         self.time = 0
         self.arrival_time = arrival_time
         self.direction = self.chooseDirection()
