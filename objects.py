@@ -61,6 +61,7 @@ class World:
 class Vehicle:
     
     def __init__(self, arrival_time = 0, valid = True):
+        self.time = 0
         self.arrival_time = arrival_time
         self.direction = self.chooseDirection()
         # Valid means that it is a vehicle that will count for data collection
@@ -88,9 +89,3 @@ class Vehicle:
             return "L"
         elif randNum == 3:
             return "R"
-
-    def exitVehicle(self):
-        from engine import current_time
-        self.exit_time = current_time
-        self.finished = True
-        self.time = self.exit_time - self.arrival_time + 20

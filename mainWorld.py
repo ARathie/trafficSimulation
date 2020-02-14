@@ -15,13 +15,15 @@ import numpy as np
 #  STATE VARIABLES
 initial_num_vehicles = 20
 itter = 0  # to put light changes at fixed rates
-num_cars = 0
-num_ppl = 0
+num_cars_in = 0
+num_cars_out = 0
+num_ppl_in = 0
+num_ppl_out = 0
 ###########################
 
 ###########################
 #  DATA
-
+time_array = np.array([])
 # each element represents a 10 minute period starting at 12:00, 12pm --> 4pm
 arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
 
@@ -87,7 +89,6 @@ def generateTimeBlockArray(startTime, endTime):
 # for example, (13, 17), (12, 15), etc.
 def scheduleArrivals(startTime, endTime):
     global arrival_rate_lambdas
-    global num_cars
     time = startTime
     timeBlockArray = generateTimeBlockArray(startTime, endTime)
 
@@ -101,14 +102,14 @@ def scheduleArrivals(startTime, endTime):
                 newEvent.randomEventType()
                 newEvent.setEventTimestamp(nextArrivalTime)
                 schedule_event(newEvent)
-                num_cars += 1
     
 def onArrival(event):
     #### PARSING ARRIVALS ####
     # Basically, I am looking through the FEL to see what deal with events
+    global num_cars_in, num_ppl_in
+    num_cars_in += 1
     car = objects.Vehicle(event.timestamp)
-    global num_ppl
-    num_ppl += int(car.passengers)
+    num_ppl_in += car.passengers
     if (event.eventType == "AW"):
         luckie_intersection.westQueue.put(car)
         initial_num_vehicles + - 1
@@ -136,22 +137,22 @@ def onLightChange(event):
                 popped = luckie_intersection.northQueue.get()
                 popped.direction = popped.chooseDirection()
                 if popped.direction == "F":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
                 elif popped.direction == "L":
                     olympic_intersection.westQueue.put(popped)
                 else:
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
 
             if not luckie_intersection.southQueue.empty():
                 popped = luckie_intersection.southQueue.get()
                 popped.direction = popped.chooseDirection()
                 if popped.direction == "F":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
                 elif popped.direction == "L":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
                 else:
                     olympic_intersection.westQueue.put(popped)
@@ -161,10 +162,10 @@ def onLightChange(event):
                 popped = olympic_intersection.northQueue.get()
                 popped.direction = popped.chooseDirection()
                 if popped.direction == "F":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
                 elif popped.direction == "L":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
                 else:
                     luckie_intersection.eastQueue.put(popped)
@@ -173,12 +174,12 @@ def onLightChange(event):
                 popped = olympic_intersection.southQueue.get()
                 popped.direction = popped.chooseDirection()
                 if popped.direction == "F":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
                 elif popped.direction == "L":
                     luckie_intersection.eastQueue.put(popped)
                 else:
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
     # FOR EAST-WEST
     else:
@@ -190,23 +191,23 @@ def onLightChange(event):
                 if popped.direction == "F":
                     olympic_intersection.westQueue.put(popped)
                 elif popped.direction == "L":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
                 else:
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
 
             if not luckie_intersection.eastQueue.empty():
                 popped = luckie_intersection.eastQueue.get()
                 popped.direction = popped.chooseDirection()
                 if popped.direction == "F":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
                 elif popped.direction == "L":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
                 else:
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     luckie_intersection.exits += 1
 
             # NOW WE POP THE OLYMPIC INTERSECTION
@@ -214,13 +215,13 @@ def onLightChange(event):
                 popped = olympic_intersection.westQueue.get()
                 popped.direction = popped.chooseDirection()
                 if popped.direction == "F":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
                 elif popped.direction == "L":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
                 else:
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
 
             if not olympic_intersection.eastQueue.empty():
@@ -229,10 +230,10 @@ def onLightChange(event):
                 if popped.direction == "F":
                     luckie_intersection.eastQueue.put(popped)
                 elif popped.direction == "L":
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
                 else:
-                    popped.exitVehicle()
+                    exitVehicle(popped)
                     olympic_intersection.exits += 1
     world.changeTheLights()
 
@@ -279,6 +280,18 @@ def generate_arrivals(time_interval): # time interval in tuple form ie (12, 15)
             schedule_event(event)
             num_cars += 1
 
+def exitVehicle(car):
+    from engine import current_time
+    global num_ppl_out, num_cars_out, time_array
+    num_cars_out += 1
+    num_ppl_out += int(car.passengers)
+    car.exit_time = current_time
+    car.finished = True
+    car.time = car.exit_time - car.arrival_time + 20
+
+
+    time_array = np.append(time_array, np.array([car.time]))
+
 def checkIfSimLive():
     return True
 
@@ -301,9 +314,16 @@ while itter < 1000:
         populateLightChanges(itter)
         itter += 1
 
-print("Number of cars: " + str(num_cars))
-print("Number of people: " + str(num_ppl))
+print()
+print("Number of cars that entered simulation: " + str(num_cars_in))
+print("Number of cars that exited simulation: " + str(num_cars_out))
+print()
+print("Number of people that entered simulation: " + str(num_ppl_in))
+print("Number of people that exited simulation: " + str(num_ppl_out))
+print()
 print("Total number of cars processed by sim " + str(olympic_intersection.exits + luckie_intersection.exits))
+print("Average time spent in simulation " + str(np.mean(time_array)))
+print()
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
 
