@@ -2,7 +2,9 @@
 import queue
 import random
 
-pass_arr = [1, 2, 1, 3, 1, 2, 2, 4, 4, 1]
+
+pass_arr = [1, 2, 1, 3, 1, 2, 2, 3, 4, 1]
+
 class Intersection:
     # The intersection's traffic queues.
     # The direction refers to the direction
@@ -28,8 +30,8 @@ class Intersection:
                 self.lights[i] = 1
             i += 1
 
-    def carsToBeLetThrough(self, light_time, speed_limit=30):
-        return speed_limit + light_time
+    # def carsToBeLetThrough(self, light_time, speed_limit):
+    #     return speed_limit + light_time
 
 
 class World:
