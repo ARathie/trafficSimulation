@@ -21,8 +21,8 @@ light_count = 0
 
 ###########################
 #  DATA
-speed_limit = 60 # road speed limit (m/s for simplicity) -> 45mph = 20.12 m/s
-light_time = 10 # time of each light cycle (in seconds)
+speed_limit = 20.12 # road speed limit (m/s for simplicity) -> 45mph = 20.12 m/s
+light_time = 60 # time of each light cycle (in seconds)
 car_count = 0 # number of cars let through each light change
 ###########################
 
@@ -101,12 +101,16 @@ def carsToBeLetThrough(light_time, speed_limit):
 # Returns time after light turns green for car to start moving
 # Assumed to be an exponential type function
 def get_time_to_move(x):
-    return 1 + (2*x)
+    if x == 0:
+        return 0
+    return 10 * math.log(x)
+    #return 1 + (2*x)
     #return 1 + (x/64) + ((x**2)/256) + ((x**3)/1024) + ((x**4)/8096)
 
 
 car_num = carsToBeLetThrough(light_time, speed_limit)
-#print(car_num)
+print("number of cars let through each change")
+print(car_num)
 
 #generates a time block array in 10 minute increments 
 def generateTimeBlockArray(startTime, endTime):
@@ -125,7 +129,7 @@ def generateTimeBlockArray(startTime, endTime):
 def scheduleArrivals(startTime, endTime):
     timeBlockArray = generateTimeBlockArray(startTime, endTime)
     for time in timeBlockArray:
-        total = round(get_num_arrivals(time)/100) # gen function gives the amount of cars passing point at given time
+        total = round(get_num_arrivals(time)) # gen function gives the amount of cars passing point at given time
         for i in range(total):
             newEvent = engine.Event()
             newEvent.randomEventType()
@@ -306,9 +310,6 @@ scheduleArrivals(start, end)
 # ((# of hours) * (3600sec/hour)) / length of light time in seconds
 itter_max = (((end - start) * 3600) / light_time)
 
-
-
-
 while itter < itter_max:
     event = fel.get()
     #event.whoami()
@@ -323,11 +324,14 @@ while itter < itter_max:
         populateLightChanges(itter)
         itter += 1
 
-print("max light changes")
-print(itter_max)
-print("actual light changes")
-print(light_count)
+# print("max light changes")
+# print(itter_max)
+# print("actual light changes")
+# print(light_count)
 
+print()
+print("Speed Limit: " + str(speed_limit))
+print("Light Time: " + str(light_time))
 print()
 print("Number of cars that entered simulation: " + str(num_cars_in))
 print("Number of cars that exited simulation: " + str(num_cars_out))
@@ -336,7 +340,7 @@ print("Number of people that entered simulation: " + str(num_ppl_in))
 print("Number of people that exited simulation: " + str(num_ppl_out))
 print()
 print("Total number of cars processed by sim " + str(olympic_intersection.exits + luckie_intersection.exits))
-print("Average time spent in simulation (in seconds)" + str(np.mean(time_array)))
+print("Average time spent in simulation (in seconds): " + str(np.mean(time_array)))
 print()
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
