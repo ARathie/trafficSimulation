@@ -41,16 +41,17 @@ class Event:
         # and 10% from north/south. Then we can randomly
         #pick from those.
 
-        randNum = random.randint(1,6) #pseudo-randomly outputs 1-6
-        if randNum == 1:
+        randNum = random.randint(1,10) #pseudo-randomly outputs 1-10
+        #higher probability that cars come from east / west than north / south
+        if randNum < 4:
             self.setEventType('AE') #vehicle arrives from east
-        elif randNum == 2:
+        elif randNum < 7:
             self.setEventType('AW') #vehicle arrives from west
-        elif randNum == 3:
+        elif randNum == 7:
             self.setEventType('AN1') #vehicle arrives from north 1
-        elif randNum == 4:
+        elif randNum == 8:
             self.setEventType('AN2') #vehicle arrives from north 2
-        elif randNum == 5:
+        elif randNum == 9:
             self.setEventType('AS1') #vehicle arrives from south 1
         else:
             self.setEventType('AS2') #vehicle arrives from south 2

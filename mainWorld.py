@@ -16,7 +16,8 @@ import numpy as np
 #  STATE VARIABLES
 initial_num_vehicles = 20
 itter = 0  # to put light changes at fixed rates
-num_cars = 0
+num_cars = 0 
+num_ppl = 0
 
 #start time that the simulation is MODELING, i.e.: SUI time between 0 hours to 23 hours
 simulationStartTime = 0
@@ -85,6 +86,7 @@ olympic_intersection = world.olympic_intersection
 def scheduleArrivals():
     global arrival_rate_lambdas
     global num_cars
+    global num_ppl
     time = simulationStartTime
 
     while time < simulationEndTime:
@@ -97,7 +99,11 @@ def scheduleArrivals():
             newEvent.randomEventType()
             newEvent.setEventTimestamp(nextArrivalTime)
             schedule_event(newEvent)
+            
+            global num_ppl, num_cars
             num_cars += 1
+            car = objects.Vehicle(newEvent.timestamp, newEvent.event_type)
+            num_ppl += car.passengers
         time = nextArrivalTime
         
     
@@ -323,13 +329,14 @@ len = 0
 for i in objects.departed_cars:
     if i[1]:
         avg_time += i[0]
-        print(i[0])
+        #print(i[0])
         len += 1
 
 avg_time = avg_time/len
 
 print("Number of cars: " + str(num_cars))
 print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
+print("Total number of people processed by sim: ", num_ppl)
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
 print("Average time spent: " + str(avg_time*60*60))
