@@ -4,7 +4,7 @@ import random
 import math as math
 
 departed_cars = list()
-pass_arr = [1, 2, 1, 3, 1, 2, 2, 3, 4, 1]
+pass_arr = [1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,3,3,4]
 
 class Intersection:
     # The intersection's traffic queues.
@@ -93,7 +93,7 @@ class Vehicle:
         self.exit_time = -1
         self.id = random.randint(1, 100000000)
         self.direction = self.chooseDirection()
-        rand_pass = random.randrange(10)
+        rand_pass = random.randrange(20)
         self.passengers = pass_arr[rand_pass]
 
     def __str__(self):
