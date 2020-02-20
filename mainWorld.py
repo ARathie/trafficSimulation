@@ -517,5 +517,10 @@ print("Total number of cars processed by sim: " + str(olympic_intersection.exits
 print("Total number of people processed by sim: ", num_ppl)
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
-print("Average time spent: " + str(avg_time*60*60))
+
+if len != 0:
+    print("Average time spent: " + str(avg_time*60*60))
+else:
+    print("Delay parameter too high. Try a lower delay for\n"
+        "accurate Average Time Spent stats.")
 
