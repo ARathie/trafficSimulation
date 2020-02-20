@@ -508,7 +508,9 @@ for i in objects.departed_cars:
         #print(i[0])
         len += 1
 
-avg_time = avg_time/len
+if len == 0
+    avg_time = avg_time/len
+
 
 print("Number of cars: " + str(num_cars))
 print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
