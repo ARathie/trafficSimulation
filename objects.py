@@ -42,9 +42,6 @@ class Intersection:
         self.eastLight = 1
         self.westLight = 1
 
-    def carsToBeLetThrough(self, light_time, speed_limit=30):
-        return speed_limit + light_time
-
 
 class World:
 
@@ -127,41 +124,3 @@ class Vehicle:
         self.time = self.exit_time - self.arrival_time
         departed_cars.append((self.time, self.middle, self.passengers, self.start))
 
-    def get_time_to_move(x):
-        if x == 0:
-            return 0
-        return 10 * math.log(x)
-        # return 1 + (2*x)
-        # return 1 + (x/64) + ((x**2)/256) + ((x**3)/1024) + ((x**4)/8096)
-
-    def carsToBeLetThrough(self, light_time, speed_limit):
-        count = 0  # number of cars let through
-        avg_accel = 7.5  # 3.5 m/s^2 is the average acceleration rate of cars
-        avg_len = 4.5  # average car length is 4.5m
-        avg_btw = 1.5  # assumed distance between each car
-
-        time_get_to_lim = speed_limit / avg_accel  # time it takes car to get to speed limit
-        dist_trav_to_lim = (avg_accel * (time_get_to_lim ** 2) / 2)  # distance traveled getting to limit
-
-        able_to_go = True  # bool for saying if cars will still be able to make it through intersection
-        while able_to_go:
-            st_time = self.get_time_to_move(count)
-            # print(st_time)
-            dist_to_go = (avg_len + avg_btw) * count
-
-            if (dist_to_go > dist_trav_to_lim):  # if car gets to speed limit before intersection
-                dist_to_go2 = dist_to_go - dist_trav_to_lim  # dist left after getting to limit
-                time_to_get_to_inter = dist_to_go2 / speed_limit
-
-                if (st_time + time_get_to_lim + time_to_get_to_inter) < light_time:
-                    count += 1
-                else:
-                    able_to_go = False
-            else:
-                time_to_get_to_inter = math.sqrt((2 * dist_to_go) / avg_accel)
-                if (st_time + time_to_get_to_inter) < light_time:
-                    count += 1
-                else:
-                    able_to_go = False
-
-        return count

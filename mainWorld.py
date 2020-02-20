@@ -73,7 +73,6 @@ def startup():
 
 startup()
 world = objects.World()
-avg = 3  # the average rate of arrival of vehicles (to be changed later)
 
 ###########################
 # EASE OF USE
@@ -114,26 +113,64 @@ def onArrival(event):
     # Basically, I am looking through the FEL to see what deal with events
     if (event.eventType == "AW"):
         luckie_intersection.westQueue.put(objects.Vehicle(event.timestamp, "AW"))
-        initial_num_vehicles + - 1
     elif (event.eventType == "AE"):
         olympic_intersection.eastQueue.put(objects.Vehicle(event.timestamp, "AE"))
-        initial_num_vehicles + - 1
     elif (event.eventType == "AN1"):
         luckie_intersection.northQueue.put(objects.Vehicle(event.timestamp, "AN1"))
-        initial_num_vehicles + - 1
     elif (event.eventType == "AN2"):
         olympic_intersection.northQueue.put(objects.Vehicle(event.timestamp, "AN2"))
-        initial_num_vehicles + - 1
     elif (event.eventType == "AS1"):
         luckie_intersection.southQueue.put(objects.Vehicle(event.timestamp, "AS1"))
     elif (event.eventType == "AS2"):
         olympic_intersection.southQueue.put(objects.Vehicle(event.timestamp, "AS2"))
 
 
+def get_time_to_move(x):
+    if x == 0:
+        return 0
+    return 10 * math.log(x)
+    # return 1 + (2*x)
+    # return 1 + (x/64) + ((x**2)/256) + ((x**3)/1024) + ((x**4)/8096)
+
+def carsToBeLetThrough(light_time, speed_limit):
+    count = 0  # number of cars let through
+    avg_accel = 7.5  # 3.5 m/s^2 is the average acceleration rate of cars
+    avg_len = 4.5  # average car length is 4.5m
+    avg_btw = 1.5  # assumed distance between each car
+
+    time_get_to_lim = speed_limit / avg_accel  # time it takes car to get to speed limit
+    dist_trav_to_lim = (avg_accel * (time_get_to_lim ** 2) / 2)  # distance traveled getting to limit
+
+    able_to_go = True  # bool for saying if cars will still be able to make it through intersection
+    while able_to_go:
+        st_time = get_time_to_move(count)
+        # print(st_time)
+        dist_to_go = (avg_len + avg_btw) * count
+
+        if (dist_to_go > dist_trav_to_lim):  # if car gets to speed limit before intersection
+            dist_to_go2 = dist_to_go - dist_trav_to_lim  # dist left after getting to limit
+            time_to_get_to_inter = dist_to_go2 / speed_limit
+
+            if (st_time + time_get_to_lim + time_to_get_to_inter) < light_time:
+                count += 1
+            else:
+                able_to_go = False
+        else:
+            time_to_get_to_inter = math.sqrt((2 * dist_to_go) / avg_accel)
+            if (st_time + time_to_get_to_inter) < light_time:
+                count += 1
+            else:
+                able_to_go = False
+
+    return count
+
+luckie_cars_through = carsToBeLetThrough(luckie_time, speed_limit)
+olympic_cars_through = carsToBeLetThrough(olympic_time, speed_limit)
+
 def onLightChange(event):
     # FOR NORTH-SOUTH
     if luckie_intersection.lights[0] is 1:
-        for i in range(0, luckie_intersection.carsToBeLetThrough(luckie_time, speed_limit)):
+        for i in range(luckie_cars_through):
             # FIRST WE POP THE LUCKIE INTERSECTION
             if not luckie_intersection.northQueue.empty():
                 popped = luckie_intersection.northQueue.queue[0]
@@ -168,7 +205,7 @@ def onLightChange(event):
                         popped = luckie_intersection.southQueue.get()
                         popped.middle = True
                         olympic_intersection.westQueue.put(popped)
-        for i in range(0, olympic_intersection.carsToBeLetThrough(olympic_time, speed_limit)):
+        for i in range(olympic_cars_through):
             # NOW WE POP THE OLYMPIC INTERSECTION
             if not olympic_intersection.northQueue.empty():
                 popped = olympic_intersection.northQueue.queue[0]
@@ -205,7 +242,7 @@ def onLightChange(event):
                     olympic_intersection.exits += 1
     # FOR EAST-WEST
     else:
-        for i in range(0, luckie_intersection.carsToBeLetThrough(luckie_time, speed_limit)):
+        for i in range(luckie_cars_through):
             # FIRST WE POP THE LUCKIE INTERSECTION
             if not luckie_intersection.westQueue.empty():
                 popped = luckie_intersection.westQueue.queue[0]
@@ -237,7 +274,7 @@ def onLightChange(event):
                     popped.exitVehicle()
                     luckie_intersection.exits += 1
 
-        for i in range(0, olympic_intersection.carsToBeLetThrough(olympic_time, speed_limit)):
+        for i in range(olympic_cars_through):
             # NOW WE POP THE OLYMPIC INTERSECTION
             if not olympic_intersection.westQueue.empty():
                 popped = olympic_intersection.westQueue.get()
@@ -272,7 +309,7 @@ def onLightChange(event):
 
 def onLightChange2(event):
     if luckie_intersection.lights[0] is 1:
-        for i in range(0, luckie_intersection.carsToBeLetThrough(luckie_time, speed_limit)):
+        for i in range(luckie_cars_through):
             # FIRST WE POP THE LUCKIE INTERSECTION
             if not luckie_intersection.northQueue.empty():
                 popped = luckie_intersection.northQueue.queue[0]
@@ -307,7 +344,7 @@ def onLightChange2(event):
                         popped = luckie_intersection.southQueue.get()
                         popped.middle = True
                         olympic_intersection.westQueue.put(popped)
-        for i in range(0, olympic_intersection.carsToBeLetThrough(olympic_time, speed_limit)):
+        for i in range(olympic_cars_through):
             # NOW WE POP THE OLYMPIC INTERSECTION
             if not olympic_intersection.northQueue.empty():
                 popped = olympic_intersection.northQueue.queue[0]
@@ -345,7 +382,7 @@ def onLightChange2(event):
     # FOR EAST-WEST
     else:
         delay2 = delay
-        for i in range(0, luckie_intersection.carsToBeLetThrough(luckie_time, speed_limit)):
+        for i in range(luckie_cars_through):
             if delay2 == 0:
                 if not luckie_intersection.westQueue.empty():
                     popped = luckie_intersection.westQueue.queue[0]
@@ -379,7 +416,7 @@ def onLightChange2(event):
                     olympic_intersection.exits += 1
 
         delay2 = delay
-        for i in range(0, luckie_intersection.carsToBeLetThrough(luckie_time, speed_limit)):
+        for i in range(olympic_cars_through):
             # NOW WE POP THE OLYMPIC INTERSECTION
             if delay2 == 0:
                 if not olympic_intersection.eastQueue.empty():
@@ -413,12 +450,6 @@ def onLightChange2(event):
                     popped.exitVehicle()
                     luckie_intersection.exits += 1
 
-def rePop(vehicle_num=initial_num_vehicles):
-    while vehicle_num > 0:
-        scheduleArrivals(avg)
-        vehicle_num -= 1
-
-       
 
 # Populating FEL w/ schedualed light changes
 def populateLightChanges(time):
