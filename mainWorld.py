@@ -508,7 +508,7 @@ for i in objects.departed_cars:
         #print(i[0])
         len += 1
 
-if len == 0
+if len != 0
     avg_time = avg_time/len
 
 
