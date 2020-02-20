@@ -20,10 +20,10 @@ num_cars = 0
 num_ppl = 0
 
 #start time that the simulation is MODELING, i.e.: SUI time between 0 hours to 23 hours
-simulationStartTime = 0
+simulationStartTime = 1
 
 #end time for the SUI, at which the simulation stops, 0 hours to 23 hours
-simulationEndTime = 5
+simulationEndTime = 23
 ###########################
 
 ###########################
@@ -128,7 +128,7 @@ def onArrival(event):
 def get_time_to_move(x):
     if x == 0:
         return 0
-    return 10 * math.log(x)
+    return 7 * math.log(x)
     # return 1 + (2*x)
     # return 1 + (x/64) + ((x**2)/256) + ((x**3)/1024) + ((x**4)/8096)
 
