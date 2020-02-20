@@ -16,7 +16,6 @@ import numpy as np
 itter = 0  # to put light changes at fixed rates
 start = 12 # starting hour
 end = 15 # ending hour
-light_count = 0
 ###########################
 
 ###########################
@@ -109,7 +108,7 @@ def get_time_to_move(x):
 
 
 car_num = carsToBeLetThrough(light_time, speed_limit)
-print("number of cars let through each change")
+print("Number of cars let through each change")
 print(car_num)
 
 #generates a time block array in 10 minute increments 
@@ -133,7 +132,7 @@ def scheduleArrivals(startTime, endTime):
         for i in range(total):
             newEvent = engine.Event()
             newEvent.randomEventType()
-            newEvent.setEventTimestamp(((time - startTime) * 3600) + (i * (600/total))) # convert to seconds and normalize arrivals
+            newEvent.setEventTimestamp(round(((time - startTime) * 3600) + (i * (600/total)))) # convert to seconds and normalize arrivals
             schedule_event(newEvent)
     
 def onArrival(event):
@@ -287,6 +286,7 @@ def exitVehicle(car):
     car.exit_time = event.timestamp
     car.finished = True
     car.time = car.exit_time - car.arrival_time + 20
+    time_array = np.append(time_array, np.array([car.time]))
 
     # print()
     # print(car.exit_time)
@@ -294,12 +294,8 @@ def exitVehicle(car):
     # print(car.time)
     # print()
 
-
-    time_array = np.append(time_array, np.array([car.time]))
-
 def checkIfSimLive():
     return True
-
 
 itter += 1
 populateLightChanges(itter)
@@ -319,15 +315,9 @@ while itter < itter_max:
 
     # If event is light change
     if event.eventType == 'LC':
-        light_count += 1
         onLightChange(event)
         populateLightChanges(itter)
         itter += 1
-
-# print("max light changes")
-# print(itter_max)
-# print("actual light changes")
-# print(light_count)
 
 print()
 print("Speed Limit: " + str(speed_limit))
@@ -340,7 +330,7 @@ print("Number of people that entered simulation: " + str(num_ppl_in))
 print("Number of people that exited simulation: " + str(num_ppl_out))
 print()
 print("Total number of cars processed by sim " + str(olympic_intersection.exits + luckie_intersection.exits))
-print("Average time spent in simulation (in seconds): " + str(np.mean(time_array)))
+print("Average time spent in simulation (in seconds): " + str(round(np.mean(time_array))))
 print()
 print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
