@@ -519,7 +519,7 @@ print("Number of cars exited from luckie intersection: " + str(luckie_intersecti
 print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
 
 if len != 0:
-    print("Average time spent: " + str(avg_time*60*60))
+    print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
 else:
     print("Delay parameter too high. Try a lower delay for\n"
         "accurate Average Time Spent stats.")
