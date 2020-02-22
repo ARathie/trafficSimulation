@@ -94,7 +94,7 @@ def scheduleArrivals():
 
         #the lambda: (cars per minute, given a time in hours)
         lambda_ = get_num_vehicles(time) / 60
-        nextArrivalTime = time + (round(random.expovariate(lambda_), 3) / 100) #timestamp of arrival event
+        nextArrivalTime = time + (round(random.expovariate(lambda_), 3) / 60) #timestamp of arrival event
         if nextArrivalTime < simulationEndTime:
             newEvent = engine.Event()
             newEvent.randomEventType()
@@ -523,4 +523,3 @@ if len != 0:
 else:
     print("Delay parameter too high. Try a lower delay for\n"
         "accurate Average Time Spent stats.")
-
