@@ -20,7 +20,7 @@ num_cars = 0
 num_ppl = 0
 
 #start time that the simulation is MODELING, i.e.: SUI time between 0 hours to 23 hours
-simulationStartTime = 1
+simulationStartTime = 18
 
 #end time for the SUI, at which the simulation stops, 0 hours to 23 hours
 simulationEndTime = 23

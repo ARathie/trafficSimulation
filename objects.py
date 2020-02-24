@@ -91,7 +91,8 @@ class Vehicle:
         self.id = random.randint(1, 100000000)
         self.direction = self.chooseDirection()
         rand_pass = random.randrange(20)
-        self.passengers = pass_arr[rand_pass]
+        self.passengers = pass_arr[rand_pass] #the number of passengers in the vehicle
+        self.time_waited = 0 #the time the vehicle has spent in the intersection (updated later)
 
     def __str__(self):
         return self.id
@@ -121,6 +122,6 @@ class Vehicle:
         from engine import current_time
         self.exit_time = current_time
         self.finished = True
-        self.time = self.exit_time - self.arrival_time
-        departed_cars.append((self.time, self.middle, self.passengers, self.start))
+        self.time_waited = self.exit_time - self.arrival_time
+        departed_cars.append((self.time_waited, self.middle, self.passengers, self.start))
 
