@@ -1,6 +1,7 @@
 # This file is the simulation application
 # This files holds the state variables and event procedure
 import sys
+import csv
 
 import numpy.random as NR
 import random
@@ -37,7 +38,7 @@ simulationEndTime = 23
 #light time: how long will lights be lit
 mode = 1
 
-if len(sys.argv) == 8:
+if len(sys.argv) == 9:
     if sys.argv[1] == '2':
         mode = 2
     delay = int(sys.argv[2])
@@ -46,7 +47,7 @@ if len(sys.argv) == 8:
     speed_limit = int(sys.argv[5])
     ped_walk = sys.argv[6]
     olympic_time = int(sys.argv[7])
-    luckie_time = int(sys.argv[7])
+    luckie_time = int(sys.argv[8])
 elif len(sys.argv) > 3:
     
     speed_limit = int(sys.argv[1])
@@ -549,5 +550,9 @@ if mode == 1:
         print("Delay parameter too high. Try a lower delay for\n"
             "accurate Average Time Spent stats.")
 else:
-    print(str(olympic_intersection.exits + luckie_intersection.exits) + "," + str(round(avg_time*60*60, 5))
-        + "," + str(num_ppl))
+    vehicles_processed = olympic_intersection.exits + luckie_intersection.exits
+    #print(str(vehicles_processed) + "," + str(round(avg_time*60*60, 5))
+    #    + "," + str(num_ppl))
+    with open('data.csv', mode='a') as data_file:
+        data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        data_writer.writerow([str(vehicles_processed), str(round(avg_time*60*60, 5)), str(num_ppl)])
