@@ -26,14 +26,29 @@ simulationStartTime = 18
 simulationEndTime = 23
 ###########################
 
-###########################
-#  DATA
+#parsing command args
+#command format: python3 mainWorld.py <mode> <delay> <start time> <end time> <speed limit> <pedestrian> <light time>
+#mode: if 1: print stuff for user to see, if 2: collect data
+#delay: should be 0 by default, some number if modeling uncoordinated system
+#start time: the start time
+#end time: the end time
+#speed limit: the speed limit
+#pedestrian: false by default, true if want to model pedestrians
+#light time: how long will lights be lit
+mode = 1
 
-# each element represents a 10 minute period starting at 12:00, 12pm --> 4pm
-arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
-
-###########################
-if len(sys.argv) > 3:
+if len(sys.argv) == 8:
+    if sys.argv[1] == '2':
+        mode = 2
+    delay = int(sys.argv[2])
+    simulationStartTime = float(sys.argv[3])
+    simulationEndTime = float(sys.argv[4])
+    speed_limit = int(sys.argv[5])
+    ped_walk = sys.argv[6]
+    olympic_time = int(sys.argv[7])
+    luckie_time = int(sys.argv[7])
+elif len(sys.argv) > 3:
+    
     speed_limit = int(sys.argv[1])
     luckie_time = int(sys.argv[2])
     olympic_time = int(sys.argv[3])
@@ -46,6 +61,14 @@ else:
     speed_limit = 30
     ped_walk = False
     delay = 0
+
+###########################
+#  DATA
+
+# each element represents a 10 minute period starting at 12:00, 12pm --> 4pm
+arrival_rates = np.array([390, 269, 184, 186, 177, 437, 1026, 1800, 1904, 1792, 1539, 1505, 1579, 1669, 1526, 1686, 1626, 1163, 1443, 1405, 1204, 1023, 900, 603])
+
+###########################
 
 
 # DATA COLLECTION VARIABLES
@@ -70,8 +93,8 @@ def startup():
         '        \/          \/                \/                    \n'
     )
 
-
-startup()
+if mode == 1:
+    startup()
 world = objects.World()
 
 ###########################
@@ -485,7 +508,8 @@ scheduleArrivals()
 
 while engine.current_time < simulationEndTime:
     event = fel.get()
-    event.whoami()
+    if mode == 1:
+        event.whoami()
     engine.current_time = event.timestamp
     #If Event Type is an Arrival Event (arrival of vehicle)
     if event.eventType[0] == 'A':
@@ -512,14 +536,18 @@ if len != 0:
     avg_time = avg_time/len
 
 
-print("Number of cars: " + str(num_cars))
-print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
-print("Total number of people processed by sim: ", num_ppl)
-print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
-print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
+if mode == 1:
+    print("Number of cars: " + str(num_cars))
+    print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
+    print("Total number of people processed by sim: ", num_ppl)
+    print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
+    print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
 
-if len != 0:
-    print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
+    if len != 0:
+        print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
+    else:
+        print("Delay parameter too high. Try a lower delay for\n"
+            "accurate Average Time Spent stats.")
 else:
-    print("Delay parameter too high. Try a lower delay for\n"
-        "accurate Average Time Spent stats.")
+    print(str(olympic_intersection.exits + luckie_intersection.exits) + "," + str(round(avg_time*60*60, 5))
+        + "," + str(num_ppl))
