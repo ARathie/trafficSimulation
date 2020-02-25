@@ -4,6 +4,7 @@ import sys
 
 import numpy.random as NR
 import random
+from queue import PriorityQueue
 import math
 from engine import current_time, fel, schedule_event
 import engine
@@ -15,7 +16,6 @@ import numpy as np
 ###########################
 #  STATE VARIABLES
 initial_num_vehicles = 20
-itter = 0  # to put light changes at fixed rates
 num_cars = 0 
 num_ppl = 0
 
@@ -88,7 +88,9 @@ def scheduleArrivals():
     global arrival_rate_lambdas
     global num_cars
     global num_ppl
+    global simulationStartTime
     time = simulationStartTime
+
 
     while time < simulationEndTime:
 
@@ -100,13 +102,11 @@ def scheduleArrivals():
             newEvent.randomEventType()
             newEvent.setEventTimestamp(nextArrivalTime)
             schedule_event(newEvent)
-            
             global num_ppl, num_cars
             num_cars += 1
             car = objects.Vehicle(newEvent.timestamp, newEvent.event_type)
             num_ppl += car.passengers
         time = nextArrivalTime
-        
     
 def onArrival(event):
     #### PARSING ARRIVALS ####
@@ -474,52 +474,85 @@ def pedWalkTime(time):
     newEvent.setEventTimestamp(time*0.00833333)
     schedule_event(newEvent)
 
-def checkIfSimLive():
-    return True
+def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
+    global num_cars, num_ppl, simulationStartTime, simulationEndTime, ped_walk, delay, luckie_cars_through, olympic_cars_through, fel
+    global current_time, luckie_intersection, olympic_intersection
+    num_cars = 0
+    num_ppl = 0
+    simulationStartTime = sim_start
+    simulationEndTime = sim_end
+    ped_walk = p_walk
+    delay = del_in
+    luckie_time = luckTime
+    olympic_time = olypTime
+    speed_limit = limit
 
+    objects.departed_cars.clear()
 
-itter += 1
-populateLightChanges(itter)
+    current_time = 0.0
 
-scheduleArrivals()
+    luckie_intersection.exits = 0
+    olympic_intersection.exits = 0
 
-while engine.current_time < simulationEndTime:
-    event = fel.get()
-    event.whoami()
-    engine.current_time = event.timestamp
-    #If Event Type is an Arrival Event (arrival of vehicle)
-    if event.eventType[0] == 'A':
-        onArrival(event)
+    luckie_cars_through = carsToBeLetThrough(luckie_time, speed_limit)
+    olympic_cars_through = carsToBeLetThrough(olympic_time, speed_limit)
 
-    if event.eventType == 'LC':
-        onLightChange2(event)
+    run_count = 1
+
+    itter = 0
+    itter += 1
+    populateLightChanges(itter)
+    if (fel.qsize() > 1):
+        fel.queue.clear()
         populateLightChanges(itter)
-        itter += 1
 
-    if event.eventType == "PW":
-        populateLightChanges(itter)
-        itter += 1
+    scheduleArrivals()
 
-avg_time = 0
-len = 0
-for i in objects.departed_cars:
-    if i[1]:
-        avg_time += i[0]
-        #print(i[0])
-        len += 1
+    while engine.current_time < simulationEndTime:
+        event = fel.get()
+        #event.whoami()
+        engine.current_time = event.timestamp
+        #If Event Type is an Arrival Event (arrival of vehicle)
+        if event.eventType[0] == 'A':
+            onArrival(event)
 
-if len != 0:
-    avg_time = avg_time/len
+        if event.eventType == 'LC':
+            onLightChange2(event)
+            populateLightChanges(itter)
+            itter += 1
+
+        if event.eventType == "PW":
+            populateLightChanges(itter)
+            itter += 1
+
+    total_time = 0
+    len = 0
+    for i in objects.departed_cars:
+        if i[1]:
+            if i[0] > 0:
+                total_time += i[0]
+                #print(i[0])
+            len += 1
+
+    if len != 0:
+        avg_time = total_time/len
+
+    print("Number of cars: " + str(num_cars))
+    print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
+    print("Total number of people processed by sim: ", num_ppl)
+    print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
+    print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
+
+    if len != 0:
+        print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
+    else:
+        print("Delay parameter too high. Try a lower delay for\n"
+            "accurate Average Time Spent stats.")
+
+    print()
 
 
-print("Number of cars: " + str(num_cars))
-print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
-print("Total number of people processed by sim: ", num_ppl)
-print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
-print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
 
-if len != 0:
-    print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
-else:
-    print("Delay parameter too high. Try a lower delay for\n"
-        "accurate Average Time Spent stats.")
+for r in range(1, 22):
+    for x in range(30):
+        run_sim(30, 30, 30, r, (r+1), False, 0)
