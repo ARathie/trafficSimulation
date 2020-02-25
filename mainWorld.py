@@ -18,6 +18,8 @@ import numpy as np
 initial_num_vehicles = 20
 num_cars = 0 
 num_ppl = 0
+ppl_array = np.array([])
+t_array = np.array([])
 
 #start time that the simulation is MODELING, i.e.: SUI time between 0 hours to 23 hours
 simulationStartTime = 18
@@ -476,7 +478,7 @@ def pedWalkTime(time):
 
 def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
     global num_cars, num_ppl, simulationStartTime, simulationEndTime, ped_walk, delay, luckie_cars_through, olympic_cars_through, fel
-    global current_time, luckie_intersection, olympic_intersection
+    global current_time, luckie_intersection, olympic_intersection, ppl_array, t_array
     num_cars = 0
     num_ppl = 0
     simulationStartTime = sim_start
@@ -537,22 +539,30 @@ def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
     if len != 0:
         avg_time = total_time/len
 
-    print("Number of cars: " + str(num_cars))
-    print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
-    print("Total number of people processed by sim: ", num_ppl)
-    print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
-    print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
+    ppl_array = np.append(ppl_array, [num_ppl])
+    t_array = np.append(t_array, [avg_time])
 
-    if len != 0:
-        print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
-    else:
-        print("Delay parameter too high. Try a lower delay for\n"
-            "accurate Average Time Spent stats.")
+    # print("Number of cars: " + str(num_cars))
+    # print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
+    # print("Total number of people processed by sim: ", num_ppl)
+    # print("Number of cars exited from luckie intersection: " + str(luckie_intersection.exits))
+    # print("Number of cars exited from olympic intersection: " + str(olympic_intersection.exits))
+    #
+    # if len != 0:
+    #     print("Average time spent in corridor: " + str(round(avg_time*60*60, 5)) + " seconds")
+    # else:
+    #     print("Delay parameter too high. Try a lower delay for\n"
+    #         "accurate Average Time Spent stats.")
+    #
+    # print()
 
-    print()
 
 
+for x in range(30):
+    run_sim(30, 30, 30, 0, 1, False, 0)
 
-for r in range(1, 22):
-    for x in range(30):
-        run_sim(30, 30, 30, r, (r+1), False, 0)
+print("people")
+print(ppl_array)
+print()
+print("times")
+print(t_array)
