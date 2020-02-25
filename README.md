@@ -2,7 +2,8 @@
 
 # 1: Open a terminal and navigate to the working directory containing the project files.
 # 2: Run python3 mainWorld.py to run the simulation. The following will detail the parameters:
-# command format: python3 mainWorld.py <mode> <delay> <start time> <end time> <speed limit> <pedestrian> <light time>
+# command format: 
+  # python3 mainWorld.py (mode) (delay) (start time) (end time) (speed limit) (pedestrian) (light time)
   # mode: if 1: print stuff for user to see, if 2: collect data
   # delay: should be 0 by default, some number if modeling uncoordinated system
   # start time: the start time
