@@ -11,6 +11,7 @@ import engine
 import objects
 import math
 import numpy as np
+import scipy.stats as st
 
 
 ###########################
@@ -93,7 +94,6 @@ def scheduleArrivals():
     global simulationStartTime
     time = simulationStartTime
 
-
     while time < simulationEndTime:
 
         #the lambda: (cars per minute, given a time in hours)
@@ -166,8 +166,8 @@ def carsToBeLetThrough(light_time, speed_limit):
 
     return count
 
-luckie_cars_through = carsToBeLetThrough(luckie_time, speed_limit)
-olympic_cars_through = carsToBeLetThrough(olympic_time, speed_limit)
+luckie_cars_through = carsToBeLetThrough(luckie_time, speed_limit) #northsouth
+olympic_cars_through = carsToBeLetThrough(olympic_time, speed_limit) #eastwest
 
 def onLightChange(event):
     # FOR NORTH-SOUTH
@@ -207,7 +207,7 @@ def onLightChange(event):
                         popped = luckie_intersection.southQueue.get()
                         popped.middle = True
                         olympic_intersection.westQueue.put(popped)
-        for i in range(olympic_cars_through):
+        for i in range(luckie_cars_through):
             # NOW WE POP THE OLYMPIC INTERSECTION
             if not olympic_intersection.northQueue.empty():
                 popped = olympic_intersection.northQueue.queue[0]
@@ -311,7 +311,7 @@ def onLightChange(event):
 
 def onLightChange2(event):
     if luckie_intersection.lights[0] is 1:
-        for i in range(olympic_cars_through):
+        for i in range(luckie_cars_through):
             # FIRST WE POP THE LUCKIE INTERSECTION
             if not luckie_intersection.northQueue.empty():
                 popped = luckie_intersection.northQueue.queue[0]
@@ -346,7 +346,7 @@ def onLightChange2(event):
                         popped = luckie_intersection.southQueue.get()
                         popped.middle = True
                         olympic_intersection.westQueue.put(popped)
-        for i in range(olympic_cars_through):
+        for i in range(luckie_cars_through):
             # NOW WE POP THE OLYMPIC INTERSECTION
             if not olympic_intersection.northQueue.empty():
                 popped = olympic_intersection.northQueue.queue[0]
@@ -476,6 +476,13 @@ def pedWalkTime(time):
     newEvent.setEventTimestamp(time*0.00833333)
     schedule_event(newEvent)
 
+    # def exitVehicle(car):
+    #     from engine import current_time
+    #     car.exit_time = current_time
+    #     car.finished = True
+    #     car.time_waited = self.exit_time - self.arrival_time
+    #     objects.departed_cars.append((car.time_waited, car.middle, car.passengers, car.start))
+
 def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
     global num_cars, num_ppl, simulationStartTime, simulationEndTime, ped_walk, delay, luckie_cars_through, olympic_cars_through, fel
     global current_time, luckie_intersection, olympic_intersection, ppl_array, t_array
@@ -491,15 +498,13 @@ def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
 
     objects.departed_cars.clear()
 
-    current_time = 0.0
+    engine.current_time = 0.0
 
-    luckie_intersection.exits = 0
-    olympic_intersection.exits = 0
+    luckie_intersection.new_system()
+    olympic_intersection.new_system()
 
     luckie_cars_through = carsToBeLetThrough(luckie_time, speed_limit)
     olympic_cars_through = carsToBeLetThrough(olympic_time, speed_limit)
-
-    run_count = 1
 
     itter = 0
     itter += 1
@@ -529,6 +534,7 @@ def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
 
     total_time = 0
     len = 0
+    avg_time = 0
     for i in objects.departed_cars:
         if i[1]:
             if i[0] > 0:
@@ -540,7 +546,7 @@ def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
         avg_time = total_time/len
 
     ppl_array = np.append(ppl_array, [num_ppl])
-    t_array = np.append(t_array, [avg_time])
+    t_array = np.append(t_array, round(avg_time*60*60, 5))
 
     # print("Number of cars: " + str(num_cars))
     # print("Total number of cars processed by sim: " + str(olympic_intersection.exits + luckie_intersection.exits))
@@ -557,12 +563,30 @@ def run_sim(limit, olypTime, luckTime, sim_start, sim_end, p_walk, del_in):
     # print()
 
 
+for r in range (0, 22):
+    for x in range(30):
+        run_sim(30, 60, 30, (r+0.5), (r+1.5), False, 10)
+    # print("start time")
+    # print(r+0.5)
+    # print("end time")
+    # print(r+1.5)
 
-for x in range(30):
-    run_sim(30, 30, 30, 0, 1, False, 0)
+    #print("people")
+    #print(ppl_array)
+    #print()
+    #print("times")
+    #print(t_array)
+    # print("average people")
+    print(np.mean(ppl_array))
+    # print("average time")
+    # print(np.mean(t_array))
 
-print("people")
-print(ppl_array)
-print()
-print("times")
-print(t_array)
+    # ci_ppl = st.t.interval(0.95, len(ppl_array)-1, loc=np.mean(ppl_array), scale=st.sem(ppl_array))
+    # ci_time = st.t.interval(0.95, len(t_array)-1, loc=np.mean(t_array), scale=st.sem(t_array))
+
+    # print()
+    # print("people CI")
+    # print(ci_ppl)
+    # print()
+    # print("time CI")
+    # print(ci_time)

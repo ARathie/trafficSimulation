@@ -22,6 +22,14 @@ class Intersection:
         self.northQueue = queue.Queue()
         self.southQueue = queue.Queue()
 
+    def new_system(self):
+        self.lights = [0, 0, 1, 1]
+        self.exits = 0
+        self.eastQueue = queue.Queue()
+        self.westQueue = queue.Queue()
+        self.northQueue = queue.Queue()
+        self.southQueue = queue.Queue()
+
     def lightChanges(self):
         i = 0
         while i < 4:
